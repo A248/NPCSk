@@ -1,4 +1,5 @@
 # NPCSk
+# IN DEVELOPMENT
 Solid Skript NPC handling using Jitse's NPCLib and bensku's Skript
 
 **What is NPCLib?**

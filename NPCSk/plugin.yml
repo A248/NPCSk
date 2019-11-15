@@ -1,0 +1,6 @@
+name: ArimSK
+main: space.arim.skript.ArimSK
+version: 0.4.1
+author: Aerodactyl_
+description: Skript Addon designed specifically for Arim.
+depend: [Skript, NPCLibPlugin, SimpleClans]

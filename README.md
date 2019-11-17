@@ -1,6 +1,9 @@
 # NPCSk
-# IN DEVELOPMENT
 Solid Skript NPC handling using Jitse's NPCLib and bensku's Skript
+
+**Notice**
+
+This program is still in development.
 
 **What is NPCLib?**
 

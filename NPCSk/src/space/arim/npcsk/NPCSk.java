@@ -19,7 +19,6 @@
 package space.arim.npcsk;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,8 +31,6 @@ public class NPCSk extends JavaPlugin {
 	
 	private SkriptAddon addon;
 	private static NPCExecutor npcs;
-	
-	private static final HashMap<String, Object> LATEST = new HashMap<String, Object>();
 	
 	private void shutter(String reason) {
 		getLogger().severe("**SEVERE**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
@@ -79,14 +76,6 @@ public class NPCSk extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		npcs.close();
-	}
-	
-	public static Object getLatest(String type) {
-		return LATEST.get(type);
-	}
-	
-	public static void setLatest(String type, Object latest) {
-		LATEST.put(type, latest);
 	}
 	
 	public static NPCExecutor npcs() {

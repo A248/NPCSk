@@ -61,7 +61,7 @@ public class NPCSk extends JavaPlugin {
 			error("Skript is not accepting syntax registrations");
 		}
 		addon = Skript.registerAddon(this);
-		addon.loadClasses("space.arim.npcsk", "cond", "eff", "evt", "expr");
+		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
 		npcs = new NPCExecutor(this);
 	}
 	

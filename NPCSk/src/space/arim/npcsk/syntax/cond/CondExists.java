@@ -16,42 +16,51 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.eff;
+package space.arim.npcsk.syntax.cond;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
+
 import ch.njol.skript.Skript;
-import ch.njol.skript.lang.Effect;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import space.arim.npcsk.NPCSk;
 
-public class EffNPCShow extends Effect {
+@Name("NPCSk NPC Existence")
+@Description("Whether a NPC by an id exists.")
+@Examples({"if npc {_hubnpc} exists:","\tsend \"The hub npc already exists!\""})
+@Since("0.6.0")
+public class CondExists extends Condition {
+
 	private Expression<String> id;
-	private Expression<Player> targets;
+	
 	static {
-		Skript.registerEffect(EffNPCShow.class, "[arimsk] (show|reveal) npc %string% to %players%");
+		Skript.registerCondition(CondExists.class, "[npcsk] npc %string% exists");
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
 		id = (Expression<String>) exprs[0];
-		targets = (Expression<Player>) exprs[1];
 		return true;
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk show npc " + id.toString(event, debug) + " to " + targets.toString(event, debug);
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc " + id.toString(evt, debug) + " exists";
 	}
 
 	@Override
-	protected void execute(Event evt) {
-		NPCSk.npcs().show(id.getSingle(evt), targets.getArray(evt));
+	public boolean check(Event evt) {
+		return NPCSk.npcs().hasNpc(id.getSingle(evt));
 	}
 	
 }

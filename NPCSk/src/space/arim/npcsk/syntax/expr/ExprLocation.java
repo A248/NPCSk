@@ -16,19 +16,44 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.eff;
+package space.arim.npcsk.syntax.expr;
 
+import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
-import ch.njol.skript.lang.Effect;
+import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import space.arim.npcsk.NPCSk;
 
-public class EffNPCDel extends Effect {
+@Name("NPCSk NPC Location")
+@Description("The location of a NPC; this cannot be changed. The only way to move an NPC is to delete and recreate it.")
+@Since("0.6.0")
+public class ExprLocation extends SimpleExpression<Location> {
+	
 	private Expression<String> id;
+	
+	static {
+		Skript.registerExpression(ExprLocation.class, Location.class, ExpressionType.PROPERTY, "[npcsk] npc location of [id] %string%");
+	}
+
+	@Override
+	public Class<? extends Location> getReturnType() {
+		return Location.class;
+	}
+
+	@Override
+	public boolean isSingle() {
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
@@ -37,13 +62,14 @@ public class EffNPCDel extends Effect {
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk delete npc from id " + id.toString(event, debug) + ".";
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc location of npc with id " + id.toString(evt, debug);
 	}
 
 	@Override
-	protected void execute(Event evt) {
-		NPCSk.npcs().delNpc(id.getSingle(evt));
+	@Nullable
+	protected Location[] get(Event evt) {
+		return NPCSk.npcs().hasNpc(id.getSingle(evt)) ? new Location[] {NPCSk.npcs().getLocation(id.getSingle(evt))} : null;
 	}
-
+	
 }

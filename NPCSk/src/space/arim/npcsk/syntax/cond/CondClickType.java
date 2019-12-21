@@ -16,55 +16,51 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.expr;
+package space.arim.npcsk.syntax.cond;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 
-public class ExprNPCEventPlayer extends SimpleExpression<Player> {
+@Name("NPCSk Interaction Clicktype")
+@Description("Determines whether the interaction was a leftclick or rightclick.")
+@Examples({"on npc interact:","\tif clicktype is leftclick:","\t\t#do stuff"})
+@Since("0.6.0")
+public class CondClickType extends Condition {
 
 	static {
-		Skript.registerExpression(ExprNPCEventPlayer.class, Player.class, ExpressionType.SIMPLE, "[arimsk] npc event-player");
-	}
-
-	@Override
-	public Class<? extends Player> getReturnType() {
-		return Player.class;
-	}
-
-	@Override
-	public boolean isSingle() {
-		return true;
-	}
-
-	@Override
-	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
-			Skript.error("The arimsk expression 'npc event-player' may only be used in npc events");
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk npc event-player in a npc interact event";
-	}
-
-	@Override
-	@Nullable
-	protected Player[] get(Event evt) {
-		return new Player[] {((NPCInteractEvent) evt).getWhoClicked()};
+		Skript.registerCondition(CondClickType.class, "[npcsk] [npc] [interaction] clicktype is (1¦leftclick|2¦rightclick)");
 	}
 	
+	@Override
+	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult parser) {
+		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
+			Skript.error("The npcsk condition 'npc clicktype' may only be used in npc events");
+			return false;
+		}
+		setNegated(parser.mark == 2);
+		return true;
+	}
+
+	@Override
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc interaction clicktype";
+	}
+
+	@Override
+	public boolean check(Event evt) {
+		boolean left = ((NPCInteractEvent) evt).getClickType() == NPCInteractEvent.ClickType.LEFT_CLICK;
+		return isNegated() ? !left : left;
+	}
 }

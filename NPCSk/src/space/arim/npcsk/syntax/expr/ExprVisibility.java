@@ -16,55 +16,80 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.expr;
+package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
+
 import space.arim.npcsk.NPCSk;
 
-public class ExprNPCLocation extends SimpleExpression<Location> {
+public class ExprVisibility extends SimpleExpression<Boolean> {
+	
 	private Expression<String> id;
+	private Expression<Player> target;
+	
 	static {
-		Skript.registerExpression(ExprNPCLocation.class, Location.class, ExpressionType.SIMPLE, "[arimsk] npc location of [npc] [with id] %string%");
+		Skript.registerExpression(ExprVisibility.class, Boolean.class, ExpressionType.COMBINED, "[npcsk] npc visibility of %string% for %player%");
 	}
-
+	
 	@Override
-	public Class<? extends Location> getReturnType() {
-		return Location.class;
+	public Class<? extends Boolean> getReturnType() {
+		return Boolean.class;
 	}
-
+	
 	@Override
 	public boolean isSingle() {
 		return true;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
 		id = (Expression<String>) exprs[0];
+		target = (Expression<Player>) exprs[1];
 		return true;
 	}
-
+	
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk npc location of npc with id " + id.toString(event, debug) + ".";
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc visibility of " + id.toString(evt, debug) + " for " + target.toString(evt, debug);
 	}
-
+	
 	@Override
 	@Nullable
-	protected Location[] get(Event evt) {
-		if (NPCSk.npcs().hasNpc(id.getSingle(evt))) {
-			return new Location[] {NPCSk.npcs().getLocation(id.getSingle(evt))};
+	protected Boolean[] get(Event evt) {
+		return new Boolean[] {NPCSk.npcs().isShown(id.getSingle(evt), target.getSingle(evt))};
+	}
+	
+	@Override
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			return CollectionUtils.array(Boolean.class);
 		}
 		return null;
+	}
+	
+	@Override
+	public void change(Event evt, Object[] delta, ChangeMode mode) {
+		boolean show = false;
+		switch (mode) {
+		case SET:
+			show = (Boolean) delta[0];
+		case RESET:
+			NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), show);
+		default:
+			throw new IllegalStateException();
+		}
 	}
 	
 }

@@ -16,24 +16,36 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.expr;
+package space.arim.npcsk.syntax.expr;
 
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
+
 import space.arim.npcsk.NPCSk;
 
-public class ExprNPCAutoHide extends SimpleExpression<Number> {
-	static {
-		Skript.registerExpression(ExprNPCAutoHide.class, Number.class, ExpressionType.SIMPLE, "[arimsk] get npc [auto] hide [(distance|radius)]");
-	}
+@Name("NPCSk Auto Hide Distance")
+@Description("Npcs are visible to a nearby player if the player is within this distance.")
+@Examples({"set npc auto hide distance to 60", "reset npc auto hide distance"})
+@Since("0.6.0")
+public class ExprAutoHide extends SimpleExpression<Number> {
 
+	static {
+		Skript.registerExpression(ExprAutoHide.class, Number.class, ExpressionType.SIMPLE, "[npcsk] [npc] auto hide (distance|radius)");
+	}
+	
 	@Override
 	public Class<? extends Number> getReturnType() {
 		return Number.class;
@@ -50,14 +62,34 @@ public class ExprNPCAutoHide extends SimpleExpression<Number> {
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk get npc auto hide distance";
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc auto hide distance";
 	}
 
 	@Override
 	@Nullable
 	protected Number[] get(Event evt) {
 		return new Number[] {NPCSk.npcs().getAutoHide()};
+	}
+	
+	@Override
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			return CollectionUtils.array(Number.class);
+		}
+		return null;
+	}
+	
+	@Override
+	public void change(Event evt, Object[] delta, ChangeMode mode) {
+		switch (mode) {
+		case SET:
+			NPCSk.npcs().setAutoHide((Double) delta[0]);
+		case RESET:
+			NPCSk.npcs().clearAutoHide();
+		default:
+			throw new IllegalStateException();
+		}
 	}
 
 }

@@ -16,37 +16,41 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.expr;
+package space.arim.npcsk.syntax.eff;
+
+import java.util.Arrays;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
 
-import ch.njol.skript.Skript;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.util.SimpleExpression;
-import ch.njol.util.Kleenean;
 import space.arim.npcsk.NPCSk;
 
-public class ExprNPCNew extends SimpleExpression<String> {
-	static {
-		Skript.registerExpression(ExprNPCNew.class, String.class, ExpressionType.COMBINED, "[arimsk] (create|make|new) npc [(of|with)] (name|title) %string% (skin|skinid) %number% (loc|location) %location%");
-	}
+import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Effect;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.util.Kleenean;
+
+@Name("NPCSk Create NPC")
+@Description("Creates a new NPC. Skins are according to Mineskin. By default, the NPC is not shown to any player. You must show it to them with \"set visibility of last created npc to true\"")
+@Examples({"Command /createnpc <text>:", "\tTrigger:", "\t\tcreate npc with name arg 1, skin 100680423, and location player's location",})
+@Since("0.6.0")
+public class EffCreate extends Effect {
+
 	private Expression<String> name;
 	private Expression<Location> location;
 	private Expression<Number> skinid;
-	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
+	
+	static {
+		Skript.registerEffect(EffCreate.class, "[npcsk] create npc with name %strings%, skin %number%, and location %location%");
 	}
-
-	@Override
-	public boolean isSingle() {
-		return true;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
@@ -57,14 +61,13 @@ public class ExprNPCNew extends SimpleExpression<String> {
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk new npc with name " + name.toString(event, debug) + ", " + skinid.toString(event, debug) + ", and location " + location.toString(event, debug) + ".";
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk create npc with name " + name.toString(evt, debug) + ", skin " + skinid.toString(evt, debug) + ", and location " + location.toString(evt, debug);
 	}
 
 	@Override
-	@Nullable
-	protected String[] get(Event evt) {
-		return new String[] {NPCSk.npcs().createNpc(name.getSingle(evt), skinid.getSingle(evt).intValue(), location.getSingle(evt))};
+	protected void execute(Event evt) {
+		NPCSk.npcs().createNpc(Arrays.asList(name.getArray(evt)), skinid.getSingle(evt).intValue(), location.getSingle(evt));
 	}
 
 }

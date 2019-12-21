@@ -16,21 +16,41 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.eff;
+package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
-import ch.njol.skript.Skript;
-import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Kleenean;
+import org.bukkit.event.Event;
+
 import space.arim.npcsk.NPCSk;
 
-public class EffNPCDelAll extends Effect {
+import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.util.SimpleExpression;
+import ch.njol.util.Kleenean;
+
+@Name("NPCSk Last Created NPC")
+@Description("The id of the last created NPC.")
+@Since("0.6.0")
+public class ExprLastCreated extends SimpleExpression<String> {
+
 	static {
-		Skript.registerEffect(EffNPCDelAll.class, "[arimsk] (delete|remove) all npcs");
+		Skript.registerExpression(ExprLastCreated.class, String.class, ExpressionType.SIMPLE, "[npcsk] last created npc");
+	}
+	
+	@Override
+	public Class<? extends String> getReturnType() {
+		return String.class;
+	}
+
+	@Override
+	public boolean isSingle() {
+		return true;
 	}
 
 	@Override
@@ -39,13 +59,15 @@ public class EffNPCDelAll extends Effect {
 	}
 
 	@Override
-	public String toString(@Nullable Event arg0, boolean arg1) {
-		return "arimsk delete all npcs";
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk last created npc";
 	}
 
 	@Override
-	protected void execute(Event evt) {
-		NPCSk.npcs().delAll();
+	@Nullable
+	protected String[] get(Event arg0) {
+		String id = NPCSk.npcs().getLatestId();
+		return id != null ? new String[] {id} : null;
 	}
-	
+
 }

@@ -18,8 +18,8 @@
  */
 package space.arim.npcsk.npcs;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,142 +32,135 @@ import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
 import net.jitse.npclib.api.state.NPCSlot;
 
-public class NPCExecutor {
+public class NPCExecutor implements AutoCloseable {
 	
 	private final NPCLib lib;
+	private final double defaultAutoHide;
 	private final HashMap<String, NPC> npcs = new HashMap<String, NPC>();
+	private String latest;
 	
 	public NPCExecutor(JavaPlugin main) {
 		lib = new NPCLib(main);
+		defaultAutoHide = lib.getAutoHideDistance();
 	}
 
-	public String createNpc(String name, int mineskinId, Location loc) {
-		NPC npc = lib.createNPC(Arrays.asList(new String[] {ChatColor.translateAlternateColorCodes('&', name)}));
+	private List<String> encodeAll(List<String> input) {
+		for (int n = 0; n < input.size(); n++) {
+			input.set(n, ChatColor.translateAlternateColorCodes('&', input.get(n)));
+		}
+		return input;
+	}
+	
+	public String getLatestId() {
+		return latest;
+	}
+	
+	public String createNpc(List<String> name, int mineskinId, Location loc) {
+		NPC npc = lib.createNPC(encodeAll(name));
 		npc.setLocation(loc);
 		MineSkinFetcher.fetchSkinFromIdAsync(mineskinId, skin -> {
 			npc.setSkin(skin);
 		});
 		npc.create();
-		npcs.put(npc.getId(), npc);
-		return npc.getId();
+		latest = npc.getId();
+		npcs.put(latest, npc);
+		return latest;
 	}
 	
 	public Location getLocation(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getLocation();
-		}
-		return null;
+		return npcs.containsKey(id) ? npcs.get(id).getLocation() : null;
 	}
 	
-	public boolean show(String id, Player...targets) {
-		if (npcs.containsKey(id)) {
-			for (Player p : targets) {
-				if (!npcs.get(id).isShown(p)) {
-					npcs.get(id).show(p);
-				}
-			}
-			return true;
-		}
-		return false;
-	}
 	public boolean isShown(String id, Player target) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).isShown(target);
-		}
-		return false;
+		return npcs.containsKey(id) && npcs.get(id).isShown(target);
 	}
-	public boolean hide(String id, Player...targets) {
-		if (npcs.containsKey(id)) {
-			for (Player p : targets) {
-				if (npcs.get(id).isShown(p)) {
-					npcs.get(id).hide(p);
-				}
-			}
+	
+	public boolean setShown(String id, Player target, boolean show) {
+		return show ? show(id, target) : hide(id, target);
+	}
+	
+	private boolean show(String id, Player target) {
+		if (npcs.containsKey(id) && !npcs.get(id).isShown(target)) {
+			npcs.get(id).show(target);
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean hide(String id, Player target) {
+		if (npcs.containsKey(id) && npcs.get(id).isShown(target)) {
+			npcs.get(id).hide(target);
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean setForSlot(String id, ItemStack item, NPCSlot slot) {
+		if (npcs.containsKey(id)) {
+			npcs.get(id).setItem(slot, item);
+			return true;
+		}
+		return false;
+	}
+	
+	private ItemStack getForSlot(String id, NPCSlot slot) {
+		return npcs.containsKey(id) ? npcs.get(id).getItem(slot) : null;
 	}
 	
 	public boolean setTool(String id, ItemStack item) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).setItem(NPCSlot.MAINHAND, item);
-			return true;
-		}
-		return false;
-	}
-	public ItemStack getTool(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getItem(NPCSlot.MAINHAND);
-		}
-		return null;
+		return setForSlot(id, item, NPCSlot.MAINHAND);
 	}
 	
 	public boolean setHelmet(String id, ItemStack item) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).setItem(NPCSlot.HELMET, item);
-			return true;
-		}
-		return false;
+		return setForSlot(id, item, NPCSlot.HELMET);
 	}
+	
 	public boolean setChestplate(String id, ItemStack item) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).setItem(NPCSlot.CHESTPLATE, item);
-			return true;
-		}
-		return false;
+		return setForSlot(id, item, NPCSlot.CHESTPLATE);
 	}
+	
 	public boolean setLeggings(String id, ItemStack item) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).setItem(NPCSlot.LEGGINGS, item);
-			return true;
-		}
-		return false;
+		return setForSlot(id, item, NPCSlot.LEGGINGS);
 	}
+	
 	public boolean setBoots(String id, ItemStack item) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).setItem(NPCSlot.BOOTS, item);
-			return true;
-		}
-		return false;
+		return setForSlot(id, item, NPCSlot.BOOTS);
+	}
+	
+	public ItemStack getTool(String id) {
+		return getForSlot(id, NPCSlot.MAINHAND);
 	}
 	
 	public ItemStack getHelmet(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getItem(NPCSlot.HELMET);
-		}
-		return null;
+		return getForSlot(id, NPCSlot.HELMET);
 	}
+	
 	public ItemStack getChestplate(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getItem(NPCSlot.CHESTPLATE);
-		}
-		return null;
+		return getForSlot(id, NPCSlot.CHESTPLATE);
 	}
+	
 	public ItemStack getLeggings(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getItem(NPCSlot.LEGGINGS);
-		}
-		return null;
+		return getForSlot(id, NPCSlot.LEGGINGS);
 	}
+	
 	public ItemStack getBoots(String id) {
-		if (npcs.containsKey(id)) {
-			return npcs.get(id).getItem(NPCSlot.BOOTS);
-		}
-		return null;
+		return getForSlot(id, NPCSlot.BOOTS);
 	}
 	
 	public boolean hasNpc(String id) {
-		if (npcs.containsKey(id)) {
-			return true;
-		}
-		return false;
+		return npcs.containsKey(id);
 	}
 	
-	public void setAutoHide(Double distance) {
+	public void setAutoHide(double distance) {
 		lib.setAutoHideDistance(distance);
 	}
-	public Double getAutoHide() {
+	
+	public double getAutoHide() {
 		return lib.getAutoHideDistance();
+	}
+	
+	public void clearAutoHide() {
+		lib.setAutoHideDistance(defaultAutoHide);
 	}
 	
 	public boolean delNpc(String id) {
@@ -185,4 +178,10 @@ public class NPCExecutor {
 		}
 		npcs.clear();
 	}
+	
+	@Override
+	public void close() {
+		delAll();
+	}
+	
 }

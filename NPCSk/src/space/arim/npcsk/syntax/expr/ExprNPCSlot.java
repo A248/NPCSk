@@ -28,6 +28,10 @@ import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -35,13 +39,17 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
+@Name("NPCSk NPC Slot")
+@Description("The item a NPC is holding in a slot. Available slots: mainhand, offhand, helmet, chestplate, leggings, boots.")
+@Examples({"set item in npc slot \"chestplate\" to diamond sword", "set {_tool} to item in npc slot \"mainhand\"", "broadcast \"The NPC's held tool is %{_tool}%!\""})
+@Since("0.7.0")
 public class ExprNPCSlot extends SimpleExpression<ItemStack> {
 
 	private Expression<String> id;
 	private Expression<String> slot;
 	
 	static {
-		Skript.registerExpression(ExprNPCSlot.class, ItemStack.class, ExpressionType.COMBINED, "[npcsk] npc slot %string% (of|for) [npc] %string%");
+		Skript.registerExpression(ExprNPCSlot.class, ItemStack.class, ExpressionType.COMBINED, "[npcsk] [item in] npc slot %string% (of|for) [npc] %string%");
 	}
 	
 	@Override
@@ -64,7 +72,7 @@ public class ExprNPCSlot extends SimpleExpression<ItemStack> {
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc slot " + slot.toString(evt, debug) + " for npc " + id.toString(evt, debug);
+		return "npcsk item in npc slot " + slot.toString(evt, debug) + " for npc " + id.toString(evt, debug);
 	}
 
 	@Override

@@ -24,6 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -33,6 +37,10 @@ import ch.njol.util.coll.CollectionUtils;
 
 import space.arim.npcsk.NPCSk;
 
+@Name("NPCSk Visibility")
+@Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
+@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
+@Since("0.7.0")
 public class ExprVisibility extends SimpleExpression<Boolean> {
 	
 	private Expression<String> id;

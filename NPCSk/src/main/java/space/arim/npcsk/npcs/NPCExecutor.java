@@ -20,6 +20,7 @@ package space.arim.npcsk.npcs;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -122,6 +123,10 @@ public class NPCExecutor implements AutoCloseable {
 			}
 		}
 		return null;
+	}
+	
+	public Set<String> getAll() {
+		return npcs.keySet();
 	}
 	
 	public boolean hasNpc(String id) {

@@ -82,14 +82,11 @@ public class ExprAutoHide extends SimpleExpression<Number> {
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		switch (mode) {
-		case SET:
+		if (mode == ChangeMode.SET) {
 			NPCSk.npcs().setAutoHide((Double) delta[0]);
-		case RESET:
-			NPCSk.npcs().clearAutoHide();
-		default:
-			throw new IllegalStateException();
+			return;
 		}
+		NPCSk.npcs().clearAutoHide();
 	}
 
 }

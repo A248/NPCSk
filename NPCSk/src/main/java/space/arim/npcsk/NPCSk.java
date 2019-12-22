@@ -29,7 +29,6 @@ import ch.njol.skript.SkriptAddon;
 
 public class NPCSk extends JavaPlugin {
 	
-	private SkriptAddon addon;
 	private static NPCExecutor npcs;
 	
 	private void shutter(String reason) {
@@ -57,7 +56,7 @@ public class NPCSk extends JavaPlugin {
 		if (!Skript.isAcceptRegistrations()) {
 			error("Skript is not accepting syntax registrations");
 		}
-		addon = Skript.registerAddon(this);
+		SkriptAddon addon = Skript.registerAddon(this);
 		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
 		npcs = new NPCExecutor(this);
 	}

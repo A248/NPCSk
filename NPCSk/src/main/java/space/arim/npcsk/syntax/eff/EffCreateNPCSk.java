@@ -16,10 +16,13 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.syntax.cond;
+package space.arim.npcsk.syntax.eff;
+
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import org.bukkit.Location;
 import org.bukkit.event.Event;
 
 import space.arim.npcsk.NPCSk;
@@ -29,38 +32,42 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Condition;
+import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
-@Name("NPCSk NPC Existence")
-@Description("Whether a NPC by an id exists.")
-@Examples({"if npc {_hubnpc} exists:","\tsend \"The hub npc already exists!\""})
+@Name("NPCSk Create NPC")
+@Description("Creates a new NPC. Skins are according to Mineskin. By default, the NPC is not shown to any player. You must show it to them with \"set visibility of last created npc to true\"")
+@Examples({"Command /createnpc <text>:", "\tTrigger:", "\t\tcreate npc with name arg 1, skin 100680423, and location player's location",})
 @Since("0.6.0")
-public class CondExists extends Condition {
+public class EffCreateNPCSk extends Effect {
 
-	private Expression<String> id;
+	private Expression<String> name;
+	private Expression<Location> location;
+	private Expression<Number> skinid;
 	
 	static {
-		Skript.registerCondition(CondExists.class, "[npcsk] npc %string% exists");
+		Skript.registerEffect(EffCreateNPCSk.class, "[npcsk] create npc with name %strings%, skin %number%, and location %location%");
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
+		name = (Expression<String>) exprs[0];
+		skinid = (Expression<Number>) exprs[1];
+		location = (Expression<Location>) exprs[2];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc " + id.toString(evt, debug) + " exists";
+		return "npcsk create npc with name " + name.toString(evt, debug) + ", skin " + skinid.toString(evt, debug) + ", and location " + location.toString(evt, debug);
 	}
 
 	@Override
-	public boolean check(Event evt) {
-		return NPCSk.npcs().hasNpc(id.getSingle(evt));
+	protected void execute(Event evt) {
+		NPCSk.npcs().createNpc(Arrays.asList(name.getArray(evt)), skinid.getSingle(evt).intValue(), location.getSingle(evt));
 	}
-	
+
 }

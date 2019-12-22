@@ -18,13 +18,8 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.eclipse.jdt.annotation.Nullable;
-
-import org.bukkit.Material;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
-
-import space.arim.npcsk.NPCSk;
+import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -39,22 +34,21 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
-@Name("NPCSk NPC Slot")
-@Description("The item a NPC is holding in a slot. Available slots: mainhand, offhand, helmet, chestplate, leggings, boots.")
-@Examples({"set item in npc slot \"chestplate\" to diamond sword", "set {_tool} to item in npc slot \"mainhand\"", "broadcast \"The NPC's held tool is %{_tool}%!\""})
-@Since("0.7.0")
-public class ExprNPCSlot extends SimpleExpression<ItemStack> {
+import space.arim.npcsk.NPCSk;
 
-	private Expression<String> id;
-	private Expression<String> slot;
-	
+@Name("NPCSk Auto Hide Distance")
+@Description("Npcs are visible to a nearby player if the player is within this distance.")
+@Examples({"set npc auto hide distance to 60", "reset npc auto hide distance"})
+@Since("0.6.0")
+public class ExprAutoHideNPCSk extends SimpleExpression<Number> {
+
 	static {
-		Skript.registerExpression(ExprNPCSlot.class, ItemStack.class, ExpressionType.COMBINED, "[npcsk] [item in] npc slot %string% (of|for) [npc] %string%");
+		Skript.registerExpression(ExprAutoHideNPCSk.class, Number.class, ExpressionType.SIMPLE, "[npcsk] [npc] auto hide (distance|radius)");
 	}
 	
 	@Override
-	public Class<? extends ItemStack> getReturnType() {
-		return ItemStack.class;
+	public Class<? extends Number> getReturnType() {
+		return Number.class;
 	}
 
 	@Override
@@ -62,37 +56,37 @@ public class ExprNPCSlot extends SimpleExpression<ItemStack> {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
-		slot = (Expression<String>) exprs[1];
+	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk item in npc slot " + slot.toString(evt, debug) + " for npc " + id.toString(evt, debug);
+		return "npcsk npc auto hide distance";
 	}
 
 	@Override
 	@Nullable
-	protected ItemStack[] get(Event evt) {
-		ItemStack item = NPCSk.npcs().getNPCSlot(id.getSingle(evt), slot.getSingle(evt));
-		return item != null ? new ItemStack[] {item} : null;
+	protected Number[] get(Event evt) {
+		return new Number[] {NPCSk.npcs().getAutoHide()};
 	}
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(ItemStack.class);
+			return CollectionUtils.array(Number.class);
 		}
 		return null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setNPCSlot(id.getSingle(evt), mode == ChangeMode.SET ? (ItemStack) delta[0] : new ItemStack(Material.AIR), slot.getSingle(evt));
+		if (mode == ChangeMode.SET) {
+			NPCSk.npcs().setAutoHide((Double) delta[0]);
+			return;
+		}
+		NPCSk.npcs().clearAutoHide();
 	}
 
 }

@@ -18,9 +18,13 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
+
+import org.bukkit.Material;
+import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
+
+import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -35,61 +39,60 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 
-import space.arim.npcsk.NPCSk;
-
-@Name("NPCSk Visibility")
-@Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
-@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
+@Name("NPCSk NPC Slot")
+@Description("The item a NPC is holding in a slot. Available slots: mainhand, offhand, helmet, chestplate, leggings, boots.")
+@Examples({"set item in npc slot \"chestplate\" to diamond sword", "set {_tool} to item in npc slot \"mainhand\"", "broadcast \"The NPC's held tool is %{_tool}%!\""})
 @Since("0.7.0")
-public class ExprVisibility extends SimpleExpression<Boolean> {
-	
+public class ExprNPCSlotNPCSk extends SimpleExpression<ItemStack> {
+
 	private Expression<String> id;
-	private Expression<Player> target;
+	private Expression<String> slot;
 	
 	static {
-		Skript.registerExpression(ExprVisibility.class, Boolean.class, ExpressionType.COMBINED, "[npcsk] npc visibility of %string% for %player%");
+		Skript.registerExpression(ExprNPCSlotNPCSk.class, ItemStack.class, ExpressionType.COMBINED, "[npcsk] [item in] npc slot %string% (of|for) [npc] %string%");
 	}
 	
 	@Override
-	public Class<? extends Boolean> getReturnType() {
-		return Boolean.class;
+	public Class<? extends ItemStack> getReturnType() {
+		return ItemStack.class;
 	}
-	
+
 	@Override
 	public boolean isSingle() {
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
 		id = (Expression<String>) exprs[0];
-		target = (Expression<Player>) exprs[1];
+		slot = (Expression<String>) exprs[1];
 		return true;
 	}
-	
+
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc visibility of " + id.toString(evt, debug) + " for " + target.toString(evt, debug);
+		return "npcsk item in npc slot " + slot.toString(evt, debug) + " for npc " + id.toString(evt, debug);
 	}
-	
+
 	@Override
 	@Nullable
-	protected Boolean[] get(Event evt) {
-		return new Boolean[] {NPCSk.npcs().isShown(id.getSingle(evt), target.getSingle(evt))};
+	protected ItemStack[] get(Event evt) {
+		ItemStack item = NPCSk.npcs().getNPCSlot(id.getSingle(evt), slot.getSingle(evt));
+		return item != null ? new ItemStack[] {item} : null;
 	}
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(Boolean.class);
+			return CollectionUtils.array(ItemStack.class);
 		}
 		return null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
+		NPCSk.npcs().setNPCSlot(id.getSingle(evt), mode == ChangeMode.SET ? (ItemStack) delta[0] : new ItemStack(Material.AIR), slot.getSingle(evt));
 	}
-	
+
 }

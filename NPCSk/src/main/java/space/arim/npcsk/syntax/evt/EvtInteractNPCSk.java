@@ -16,49 +16,44 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.syntax.eff;
-
-import org.eclipse.jdt.annotation.Nullable;
+package space.arim.npcsk.syntax.evt;
 
 import org.bukkit.event.Event;
-
-import space.arim.npcsk.NPCSk;
+import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Kleenean;
+import net.jitse.npclib.api.events.NPCInteractEvent;
 
-@Name("NPCSk Delete NPC")
-@Description("Removes a NPC.")
+@Name("NPCSk Interact Event")
+@Description("Fired when a player clicks on a NPC.")
+@Examples({"on npc interact:","\tif clicktype is leftclick:","\t\t#do stuff"})
 @Since("0.6.0")
-public class EffDelete extends Effect {
-	
-	private Expression<String> id;
+public class EvtInteractNPCSk extends SkriptEvent {
 	
 	static {
-		Skript.registerEffect(EffDelete.class, "[npcsk] (delete|remove|clear) npc [(with|from) id] %string%");
+		Skript.registerEvent("NPC Interact", EvtInteractNPCSk.class, NPCInteractEvent.class, "[npcsk] npc interact [event]");
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
+	public boolean init(Literal<?>[] args, int arg1, ParseResult arg2) {
 		return true;
 	}
-
+	
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk delete npc from id " + id.toString(evt, debug);
+		return "npcsk npc interact event";
 	}
 
 	@Override
-	protected void execute(Event evt) {
-		NPCSk.npcs().delNpc(id.getSingle(evt));
+	public boolean check(Event evt) {
+		return evt instanceof NPCInteractEvent;
 	}
-
+	
 }

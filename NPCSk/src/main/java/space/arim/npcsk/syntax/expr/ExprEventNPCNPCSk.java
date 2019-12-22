@@ -21,10 +21,9 @@ package space.arim.npcsk.syntax.expr;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
-import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
@@ -32,23 +31,20 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import ch.njol.util.coll.CollectionUtils;
+import net.jitse.npclib.api.events.NPCInteractEvent;
 
-import space.arim.npcsk.NPCSk;
-
-@Name("NPCSk Auto Hide Distance")
-@Description("Npcs are visible to a nearby player if the player is within this distance.")
-@Examples({"set npc auto hide distance to 60", "reset npc auto hide distance"})
+@Name("NPCSk Event-NPC")
+@Description("The NPC in a NPC interact event.")
 @Since("0.6.0")
-public class ExprAutoHide extends SimpleExpression<Number> {
-
-	static {
-		Skript.registerExpression(ExprAutoHide.class, Number.class, ExpressionType.SIMPLE, "[npcsk] [npc] auto hide (distance|radius)");
-	}
+public class ExprEventNPCNPCSk extends SimpleExpression<String> {
 	
+	static {
+		Skript.registerExpression(ExprEventNPCNPCSk.class, String.class, ExpressionType.SIMPLE, "[npcsk] npc-event-npc");
+	}
+
 	@Override
-	public Class<? extends Number> getReturnType() {
-		return Number.class;
+	public Class<? extends String> getReturnType() {
+		return String.class;
 	}
 
 	@Override
@@ -58,35 +54,23 @@ public class ExprAutoHide extends SimpleExpression<Number> {
 
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
+		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
+			Skript.error("The arimsk expression 'npc-event-npc' may only be used in npc events");
+			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc auto hide distance";
+		return "npcsk npc-event-npc";
 	}
 
 	@Override
 	@Nullable
-	protected Number[] get(Event evt) {
-		return new Number[] {NPCSk.npcs().getAutoHide()};
+	protected String[] get(Event evt) {
+		return new String[] {((NPCInteractEvent) evt).getNPC().getId()};
 	}
 	
-	@Override
-	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(Number.class);
-		}
-		return null;
-	}
-	
-	@Override
-	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		if (mode == ChangeMode.SET) {
-			NPCSk.npcs().setAutoHide((Double) delta[0]);
-			return;
-		}
-		NPCSk.npcs().clearAutoHide();
-	}
 
 }

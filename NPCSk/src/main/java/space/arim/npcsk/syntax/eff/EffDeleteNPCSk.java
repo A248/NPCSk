@@ -16,51 +16,49 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.syntax.cond;
+package space.arim.npcsk.syntax.eff;
 
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
-import ch.njol.skript.ScriptLoader;
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
+
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Condition;
+import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import net.jitse.npclib.api.events.NPCInteractEvent;
 
-@Name("NPCSk Interaction Clicktype")
-@Description("Determines whether the interaction was a leftclick or rightclick.")
-@Examples({"on npc interact:","\tif clicktype is leftclick:","\t\t#do stuff"})
+@Name("NPCSk Delete NPC")
+@Description("Removes a NPC.")
 @Since("0.6.0")
-public class CondClickType extends Condition {
-
+public class EffDeleteNPCSk extends Effect {
+	
+	private Expression<String> id;
+	
 	static {
-		Skript.registerCondition(CondClickType.class, "[npcsk] [npc] [interaction] clicktype is (1¦leftclick|2¦rightclick)");
+		Skript.registerEffect(EffDeleteNPCSk.class, "[npcsk] (delete|remove|clear) npc [(with|from) id] %string%");
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult parser) {
-		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
-			Skript.error("The npcsk condition 'npc clicktype' may only be used in npc events");
-			return false;
-		}
-		setNegated(parser.mark == 2);
+	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
+		id = (Expression<String>) exprs[0];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc interaction clicktype";
+		return "npcsk delete npc from id " + id.toString(evt, debug);
 	}
 
 	@Override
-	public boolean check(Event evt) {
-		boolean left = ((NPCInteractEvent) evt).getClickType() == NPCInteractEvent.ClickType.LEFT_CLICK;
-		return isNegated() ? !left : left;
+	protected void execute(Event evt) {
+		NPCSk.npcs().delNpc(id.getSingle(evt));
 	}
+
 }

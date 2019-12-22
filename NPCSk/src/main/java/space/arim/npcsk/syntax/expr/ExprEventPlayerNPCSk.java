@@ -37,10 +37,10 @@ import net.jitse.npclib.api.events.NPCInteractEvent;
 @Name("NPCSk Event-Player")
 @Description("The player in a NPC interact event.")
 @Since("0.6.0")
-public class ExprEventPlayer extends SimpleExpression<Player> {
+public class ExprEventPlayerNPCSk extends SimpleExpression<Player> {
 
 	static {
-		Skript.registerExpression(ExprEventPlayer.class, Player.class, ExpressionType.SIMPLE, "[npcsk] npc-event-player");
+		Skript.registerExpression(ExprEventPlayerNPCSk.class, Player.class, ExpressionType.SIMPLE, "[npcsk] npc-event-player");
 	}
 
 	@Override

@@ -18,11 +18,9 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.eclipse.jdt.annotation.Nullable;
-
+import org.bukkit.Location;
 import org.bukkit.event.Event;
-
-import space.arim.npcsk.NPCSk;
+import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -33,19 +31,22 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import space.arim.npcsk.NPCSk;
 
-@Name("NPCSk Last Created NPC")
-@Description("The id of the last created NPC.")
+@Name("NPCSk NPC Location")
+@Description("The location of a NPC; this cannot be changed. The only way to move an NPC is to delete and recreate it.")
 @Since("0.6.0")
-public class ExprLastCreated extends SimpleExpression<String> {
-
-	static {
-		Skript.registerExpression(ExprLastCreated.class, String.class, ExpressionType.SIMPLE, "[npcsk] last created npc");
-	}
+public class ExprLocationNPCSk extends SimpleExpression<Location> {
 	
+	private Expression<String> id;
+	
+	static {
+		Skript.registerExpression(ExprLocationNPCSk.class, Location.class, ExpressionType.PROPERTY, "[npcsk] npc location of [id] %string%");
+	}
+
 	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
+	public Class<? extends Location> getReturnType() {
+		return Location.class;
 	}
 
 	@Override
@@ -53,21 +54,22 @@ public class ExprLastCreated extends SimpleExpression<String> {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
+	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
+		id = (Expression<String>) exprs[0];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk last created npc";
+		return "npcsk npc location of npc with id " + id.toString(evt, debug);
 	}
 
 	@Override
 	@Nullable
-	protected String[] get(Event arg0) {
-		String id = NPCSk.npcs().getLatestId();
-		return id != null ? new String[] {id} : null;
+	protected Location[] get(Event evt) {
+		return NPCSk.npcs().hasNpc(id.getSingle(evt)) ? new Location[] {NPCSk.npcs().getLocation(id.getSingle(evt))} : null;
 	}
-
+	
 }

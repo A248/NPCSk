@@ -16,44 +16,51 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.syntax.evt;
+package space.arim.npcsk.syntax.cond;
 
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+import ch.njol.skript.ScriptLoader;
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Literal;
-import ch.njol.skript.lang.SkriptEvent;
+import ch.njol.skript.lang.Condition;
+import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.util.Kleenean;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 
-@Name("NPCSk Interact Event")
-@Description("Fired when a player clicks on a NPC.")
+@Name("NPCSk Interaction Clicktype")
+@Description("Determines whether the interaction was a leftclick or rightclick.")
 @Examples({"on npc interact:","\tif clicktype is leftclick:","\t\t#do stuff"})
 @Since("0.6.0")
-public class EvtInteract extends SkriptEvent {
-	
+public class CondClickTypeNPCSk extends Condition {
+
 	static {
-		Skript.registerEvent("NPC Interact", EvtInteract.class, NPCInteractEvent.class, "[npcsk] npc interact [event]");
+		Skript.registerCondition(CondClickTypeNPCSk.class, "[npcsk] [npc] [interaction] clicktype is (1¦leftclick|2¦rightclick)");
 	}
 	
 	@Override
-	public boolean init(Literal<?>[] args, int arg1, ParseResult arg2) {
+	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult parser) {
+		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
+			Skript.error("The npcsk condition 'npc clicktype' may only be used in npc events");
+			return false;
+		}
+		setNegated(parser.mark == 2);
 		return true;
 	}
-	
+
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc interact event";
+		return "npcsk npc interaction clicktype";
 	}
 
 	@Override
 	public boolean check(Event evt) {
-		return evt instanceof NPCInteractEvent;
+		boolean left = ((NPCInteractEvent) evt).getClickType() == NPCInteractEvent.ClickType.LEFT_CLICK;
+		return isNegated() ? !left : left;
 	}
-	
 }

@@ -16,61 +16,51 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.syntax.expr;
+package space.arim.npcsk.syntax.cond;
 
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
-import ch.njol.skript.ScriptLoader;
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
+
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import net.jitse.npclib.api.events.NPCInteractEvent;
 
-@Name("NPCSk Event-NPC")
-@Description("The NPC in a NPC interact event.")
+@Name("NPCSk NPC Existence")
+@Description("Whether a NPC by an id exists.")
+@Examples({"if npc {_hubnpc} exists:","\tsend \"The hub npc already exists!\""})
 @Since("0.6.0")
-public class ExprEventNPC extends SimpleExpression<String> {
+public class CondExistsNPCSk extends Condition {
+
+	private Expression<String> id;
 	
 	static {
-		Skript.registerExpression(ExprEventNPC.class, String.class, ExpressionType.SIMPLE, "[npcsk] npc-event-npc");
+		Skript.registerCondition(CondExistsNPCSk.class, "[npcsk] npc %string% exists");
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
-	}
-
-	@Override
-	public boolean isSingle() {
-		return true;
-	}
-
-	@Override
-	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
-		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
-			Skript.error("The arimsk expression 'npc-event-npc' may only be used in npc events");
-			return false;
-		}
+	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
+		id = (Expression<String>) exprs[0];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc-event-npc";
+		return "npcsk npc " + id.toString(evt, debug) + " exists";
 	}
 
 	@Override
-	@Nullable
-	protected String[] get(Event evt) {
-		return new String[] {((NPCInteractEvent) evt).getNPC().getId()};
+	public boolean check(Event evt) {
+		return NPCSk.npcs().hasNpc(id.getSingle(evt));
 	}
 	
-
 }

@@ -8,7 +8,7 @@
 	<name>NPCSK</name>
 	<description>A Skript addon to provide support for Jitse's NPCLib</description>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.name}_v${project.version}</finalName>
 		<plugins>
 			<plugin>

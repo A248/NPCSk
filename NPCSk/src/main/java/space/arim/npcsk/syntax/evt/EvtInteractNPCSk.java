@@ -1,5 +1,5 @@
 /* 
- * NPCSk
+ * NPCSk, a robust Skript NPC addon
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
@@ -16,42 +16,44 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.npcsk.eff;
+package space.arim.npcsk.syntax.evt;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Kleenean;
-import space.arim.npcsk.NPCSk;
+import net.jitse.npclib.api.events.NPCInteractEvent;
 
-public class EffNPCShow extends Effect {
-	private Expression<String> id;
-	private Expression<Player> targets;
+@Name("NPCSk Interact Event")
+@Description("Fired when a player clicks on a NPC.")
+@Examples({"on npc interact:","\tif clicktype is leftclick:","\t\t#do stuff"})
+@Since("0.6.0")
+public class EvtInteractNPCSk extends SkriptEvent {
+	
 	static {
-		Skript.registerEffect(EffNPCShow.class, "[arimsk] (show|reveal) npc %string% to %players%");
+		Skript.registerEvent("NPC Interact", EvtInteractNPCSk.class, NPCInteractEvent.class, "[npcsk] npc interact [event]");
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
-		targets = (Expression<Player>) exprs[1];
+	public boolean init(Literal<?>[] args, int arg1, ParseResult arg2) {
 		return true;
 	}
-
+	
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return "arimsk show npc " + id.toString(event, debug) + " to " + targets.toString(event, debug);
+	public String toString(@Nullable Event evt, boolean debug) {
+		return "npcsk npc interact event";
 	}
 
 	@Override
-	protected void execute(Event evt) {
-		NPCSk.npcs().show(id.getSingle(evt), targets.getArray(evt));
+	public boolean check(Event evt) {
+		return evt instanceof NPCInteractEvent;
 	}
 	
 }

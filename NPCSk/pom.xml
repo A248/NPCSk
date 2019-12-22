@@ -14,7 +14,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<universal.version>0.5.2-SNAPSHOT</universal.version>
+		<universal.version>0.6.0-SNAPSHOT</universal.version>
 	</properties>
 	
 	<licenses>

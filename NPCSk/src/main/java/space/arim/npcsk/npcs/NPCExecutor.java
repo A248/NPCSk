@@ -18,152 +18,46 @@
  */
 package space.arim.npcsk.npcs;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import net.jitse.npclib.NPCLib;
-import net.jitse.npclib.api.NPC;
-import net.jitse.npclib.api.skin.MineSkinFetcher;
-import net.jitse.npclib.api.state.NPCSlot;
+import space.arim.universal.registry.Registrable;
 
-public class NPCExecutor implements AutoCloseable {
-	
-	private final NPCLib lib;
-	private final double defaultAutoHide;
-	private final HashMap<String, NPC> npcs = new HashMap<String, NPC>();
-	private String latest;
-	
-	public NPCExecutor(JavaPlugin main) {
-		lib = new NPCLib(main);
-		defaultAutoHide = lib.getAutoHideDistance();
-	}
+public interface NPCExecutor extends Registrable, AutoCloseable {
 
-	private List<String> encodeAll(List<String> input) {
-		for (int n = 0; n < input.size(); n++) {
-			input.set(n, ChatColor.translateAlternateColorCodes('&', input.get(n)));
-		}
-		return input;
-	}
+	String getLatestId();
 	
-	public String getLatestId() {
-		return latest;
-	}
+	String createNpc(List<String> name, int mineskinId, Location location);
 	
-	public String createNpc(List<String> name, int mineskinId, Location loc) {
-		NPC npc = lib.createNPC(encodeAll(name));
-		npc.setLocation(loc);
-		MineSkinFetcher.fetchSkinFromIdAsync(mineskinId, skin -> {
-			npc.setSkin(skin);
-		});
-		npc.create();
-		latest = npc.getId();
-		npcs.put(latest, npc);
-		return latest;
-	}
+	Location getLocation(String id);
 	
-	public Location getLocation(String id) {
-		return npcs.containsKey(id) ? npcs.get(id).getLocation() : null;
-	}
+	boolean isShown(String id, Player target);
 	
-	public boolean isShown(String id, Player target) {
-		return npcs.containsKey(id) && npcs.get(id).isShown(target);
-	}
+	boolean setShown(String id, Player target, boolean show);
 	
-	public boolean setShown(String id, Player target, boolean show) {
-		return show ? show(id, target) : hide(id, target);
-	}
+	boolean setNPCSlot(String id, ItemStack item, String slot);
 	
-	private boolean show(String id, Player target) {
-		if (npcs.containsKey(id) && !npcs.get(id).isShown(target)) {
-			npcs.get(id).show(target);
-			return true;
-		}
-		return false;
-	}
+	ItemStack getNPCSlot(String id, String slot);
 	
-	private boolean hide(String id, Player target) {
-		if (npcs.containsKey(id) && npcs.get(id).isShown(target)) {
-			npcs.get(id).hide(target);
-			return true;
-		}
-		return false;
-	}
+	Set<String> getAll();
 	
-	private boolean setForSlot(String id, ItemStack item, NPCSlot slot) {
-		if (slot != null && npcs.containsKey(id)) {
-			npcs.get(id).setItem(slot, item);
-			return true;
-		}
-		return false;
-	}
+	boolean hasNpc(String id);
 	
-	private ItemStack getForSlot(String id, NPCSlot slot) {
-		return slot == null ? null : npcs.containsKey(id) ? npcs.get(id).getItem(slot) : null;
-	}
+	void setAutoHide(double distance);
 	
-	public boolean setNPCSlot(String id, ItemStack item, String slot) {
-		return setForSlot(id, item, slotFromString(slot));
-	}
+	double getAutoHide();
 	
-	public ItemStack getNPCSlot(String id, String slot) {
-		return getForSlot(id, slotFromString(slot));
-	}
+	void clearAutoHide();
 	
-	private NPCSlot slotFromString(String slotname) {
-		for (NPCSlot slot : NPCSlot.values()) {
-			if (slotname.equalsIgnoreCase(slot.name())) {
-				return slot;
-			}
-		}
-		return null;
-	}
+	boolean delNpc(String id);
 	
-	public Set<String> getAll() {
-		return npcs.keySet();
-	}
-	
-	public boolean hasNpc(String id) {
-		return npcs.containsKey(id);
-	}
-	
-	public void setAutoHide(double distance) {
-		lib.setAutoHideDistance(distance);
-	}
-	
-	public double getAutoHide() {
-		return lib.getAutoHideDistance();
-	}
-	
-	public void clearAutoHide() {
-		lib.setAutoHideDistance(defaultAutoHide);
-	}
-	
-	public boolean delNpc(String id) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).destroy();
-			npcs.remove(id);
-			return true;
-		}
-		return false;
-	}
-	
-	public void delAll() {
-		for (HashMap.Entry<String, NPC> val : npcs.entrySet()) {
-			val.getValue().destroy();
-		}
-		npcs.clear();
-	}
+	void delAll();
 	
 	@Override
-	public void close() {
-		delAll();
-	}
+	void close();
 	
 }

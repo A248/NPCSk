@@ -20,32 +20,33 @@ package space.arim.npcsk.syntax.expr;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import org.bukkit.Material;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 
 import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
 
-@Name("NPCSk Last Created NPC")
-@Description("The id of the last created NPC.")
-@Since("0.6.0")
-public class ExprLastCreated extends SimpleExpression<String> {
+public class ExprNPCSlot extends SimpleExpression<ItemStack> {
 
+	private Expression<String> id;
+	private Expression<String> slot;
+	
 	static {
-		Skript.registerExpression(ExprLastCreated.class, String.class, ExpressionType.SIMPLE, "[npcsk] last created npc");
+		Skript.registerExpression(ExprNPCSlot.class, ItemStack.class, ExpressionType.COMBINED, "[npcsk] npc slot %string% (of|for) [npc] %string%");
 	}
 	
 	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
+	public Class<? extends ItemStack> getReturnType() {
+		return ItemStack.class;
 	}
 
 	@Override
@@ -53,21 +54,37 @@ public class ExprLastCreated extends SimpleExpression<String> {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
+	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
+		id = (Expression<String>) exprs[0];
+		slot = (Expression<String>) exprs[1];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk last created npc";
+		return "npcsk npc slot " + slot.toString(evt, debug) + " for npc " + id.toString(evt, debug);
 	}
 
 	@Override
 	@Nullable
-	protected String[] get(Event arg0) {
-		String id = NPCSk.npcs().getLatestId();
-		return id != null ? new String[] {id} : null;
+	protected ItemStack[] get(Event evt) {
+		ItemStack item = NPCSk.npcs().getNPCSlot(id.getSingle(evt), slot.getSingle(evt));
+		return item != null ? new ItemStack[] {item} : null;
+	}
+	
+	@Override
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			return CollectionUtils.array(ItemStack.class);
+		}
+		return null;
+	}
+	
+	@Override
+	public void change(Event evt, Object[] delta, ChangeMode mode) {
+		NPCSk.npcs().setNPCSlot(id.getSingle(evt), mode == ChangeMode.SET ? (ItemStack) delta[0] : new ItemStack(Material.AIR), slot.getSingle(evt));
 	}
 
 }

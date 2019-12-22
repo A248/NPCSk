@@ -1,5 +1,5 @@
 /* 
- * NPCSk
+ * NPCSk, a robust Skript NPC addon
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
@@ -96,7 +96,7 @@ public class NPCExecutor implements AutoCloseable {
 	}
 	
 	private boolean setForSlot(String id, ItemStack item, NPCSlot slot) {
-		if (npcs.containsKey(id)) {
+		if (slot != null && npcs.containsKey(id)) {
 			npcs.get(id).setItem(slot, item);
 			return true;
 		}
@@ -104,47 +104,24 @@ public class NPCExecutor implements AutoCloseable {
 	}
 	
 	private ItemStack getForSlot(String id, NPCSlot slot) {
-		return npcs.containsKey(id) ? npcs.get(id).getItem(slot) : null;
+		return slot == null ? null : npcs.containsKey(id) ? npcs.get(id).getItem(slot) : null;
 	}
 	
-	public boolean setTool(String id, ItemStack item) {
-		return setForSlot(id, item, NPCSlot.MAINHAND);
+	public boolean setNPCSlot(String id, ItemStack item, String slot) {
+		return setForSlot(id, item, slotFromString(slot));
 	}
 	
-	public boolean setHelmet(String id, ItemStack item) {
-		return setForSlot(id, item, NPCSlot.HELMET);
+	public ItemStack getNPCSlot(String id, String slot) {
+		return getForSlot(id, slotFromString(slot));
 	}
 	
-	public boolean setChestplate(String id, ItemStack item) {
-		return setForSlot(id, item, NPCSlot.CHESTPLATE);
-	}
-	
-	public boolean setLeggings(String id, ItemStack item) {
-		return setForSlot(id, item, NPCSlot.LEGGINGS);
-	}
-	
-	public boolean setBoots(String id, ItemStack item) {
-		return setForSlot(id, item, NPCSlot.BOOTS);
-	}
-	
-	public ItemStack getTool(String id) {
-		return getForSlot(id, NPCSlot.MAINHAND);
-	}
-	
-	public ItemStack getHelmet(String id) {
-		return getForSlot(id, NPCSlot.HELMET);
-	}
-	
-	public ItemStack getChestplate(String id) {
-		return getForSlot(id, NPCSlot.CHESTPLATE);
-	}
-	
-	public ItemStack getLeggings(String id) {
-		return getForSlot(id, NPCSlot.LEGGINGS);
-	}
-	
-	public ItemStack getBoots(String id) {
-		return getForSlot(id, NPCSlot.BOOTS);
+	private NPCSlot slotFromString(String slotname) {
+		for (NPCSlot slot : NPCSlot.values()) {
+			if (slotname.equalsIgnoreCase(slot.name())) {
+				return slot;
+			}
+		}
+		return null;
 	}
 	
 	public boolean hasNpc(String id) {

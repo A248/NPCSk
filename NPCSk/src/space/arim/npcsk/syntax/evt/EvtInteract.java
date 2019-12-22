@@ -1,5 +1,5 @@
 /* 
- * NPCSk
+ * NPCSk, a robust Skript NPC addon
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify

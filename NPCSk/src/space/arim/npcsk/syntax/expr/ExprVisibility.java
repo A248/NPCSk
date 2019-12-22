@@ -1,5 +1,5 @@
 /* 
- * NPCSk
+ * NPCSk, a robust Skript NPC addon
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
@@ -81,15 +81,7 @@ public class ExprVisibility extends SimpleExpression<Boolean> {
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		boolean show = false;
-		switch (mode) {
-		case SET:
-			show = (Boolean) delta[0];
-		case RESET:
-			NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), show);
-		default:
-			throw new IllegalStateException();
-		}
+		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
 	}
 	
 }

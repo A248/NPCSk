@@ -114,6 +114,17 @@
 		</plugins>
 	</build>
 	
+	<distributionManagement>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+		</repository>
+		<snapshotRepository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>space.arim</groupId>
@@ -174,6 +185,10 @@
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>

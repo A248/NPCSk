@@ -18,8 +18,11 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
+
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -32,9 +35,6 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import ch.njol.util.coll.CollectionUtils;
-
-import space.arim.npcsk.NPCSk;
 
 @Name("NPCSk Auto Hide Distance")
 @Description("Npcs are visible to a nearby player if the player is within this distance.")
@@ -75,7 +75,7 @@ public class ExprAutoHideNPCSk extends SimpleExpression<Number> {
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(Number.class);
+			return new Class<?>[] {Number.class};
 		}
 		return null;
 	}

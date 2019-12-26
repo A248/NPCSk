@@ -33,8 +33,6 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import ch.njol.util.coll.CollectionUtils;
-
 import space.arim.npcsk.NPCSk;
 
 @Name("NPCSk Visibility")
@@ -82,7 +80,7 @@ public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(Boolean.class);
+			return new Class<?>[] {Boolean.class};
 		}
 		return null;
 	}

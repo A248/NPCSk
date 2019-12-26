@@ -37,7 +37,6 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import ch.njol.util.coll.CollectionUtils;
 
 @Name("NPCSk NPC Slot")
 @Description("The item a NPC is holding in a slot. Available slots: mainhand, offhand, helmet, chestplate, leggings, boots.")
@@ -85,7 +84,7 @@ public class ExprNPCSlotNPCSk extends SimpleExpression<ItemStack> {
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return CollectionUtils.array(ItemStack.class);
+			return new Class<?>[] {ItemStack.class};
 		}
 		return null;
 	}

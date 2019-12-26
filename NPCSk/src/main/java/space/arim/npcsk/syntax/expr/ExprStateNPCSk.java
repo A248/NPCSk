@@ -18,9 +18,11 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
+
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -33,48 +35,47 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import space.arim.npcsk.NPCSk;
 
-@Name("NPCSk Visibility")
-@Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
-@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
-@Since("0.7.0")
-public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
-	
+@Name("NPCSk State")
+@Description("Whether a NPC is has a specific state. Available states are \"crouched\", \"invisible\", and \"on_fire\".")
+@Examples({"on npc interact:", "#This example will make the NPC crouch if it is not, and uncrouch if it is.", "\tif npc state \"crouched\" of npc-event-npc = false:", "\t\tset npc state \"crouched\" of npc-event-npc to true", "\telse:", "\t\tset npc state \\\"crouched\\\" of npc-event-npc to false"})
+@Since("0.9.0")
+public class ExprStateNPCSk extends SimpleExpression<Boolean> {
+
+	private Expression<String> state;
 	private Expression<String> id;
-	private Expression<Player> target;
 	
 	static {
-		Skript.registerExpression(ExprVisibilityNPCSk.class, Boolean.class, ExpressionType.COMBINED, "[npcsk] npc visibility of %string% for %player%");
+		Skript.registerExpression(ExprStateNPCSk.class, Boolean.class, ExpressionType.COMBINED, "[npcsk] npc state %string% of [npc] %string%");
 	}
 	
 	@Override
 	public Class<? extends Boolean> getReturnType() {
 		return Boolean.class;
 	}
-	
+
 	@Override
 	public boolean isSingle() {
 		return true;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
-		target = (Expression<Player>) exprs[1];
+		state = (Expression<String>) exprs[0];
+		id = (Expression<String>) exprs[1];
 		return true;
 	}
-	
+
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc visibility of " + id.toString(evt, debug) + " for " + target.toString(evt, debug);
+		return "npcsk npc state " + state.toString(evt, debug) + " of " + id.toString(evt, debug);
 	}
-	
+
 	@Override
 	@Nullable
 	protected Boolean[] get(Event evt) {
-		return new Boolean[] {NPCSk.npcs().isShown(id.getSingle(evt), target.getSingle(evt))};
+		return new Boolean[] {NPCSk.npcs().getNPCState(id.getSingle(evt), state.getSingle(evt))};
 	}
 	
 	@Override
@@ -87,7 +88,16 @@ public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
+		switch (mode) {
+		case SET:
+			NPCSk.npcs().setNPCState(id.getSingle(evt), state.getSingle(evt), (Boolean) delta[0]);
+			break;
+		case RESET:
+			NPCSk.npcs().setNPCState(id.getSingle(evt), state.getSingle(evt), false);
+			break;
+		default:
+			break;
+		}
 	}
-	
+
 }

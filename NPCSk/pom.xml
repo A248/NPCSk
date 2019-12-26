@@ -2,14 +2,57 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>space.arim</groupId>
-	<artifactId>NPCSk</artifactId>
-	<version>0.7.0</version>
+	<artifactId>npcsk</artifactId>
+	<version>0.9.0</version>
+	
 	<name>NPCSK</name>
 	<description>A Skript addon to provide support for Jitse's NPCLib</description>
+	<url>https://github.com/A248/NPCSk</url>
+	<inceptionYear>2019</inceptionYear>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<universal.version>0.6.3-SNAPSHOT</universal.version>
+	</properties>
+	
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/</url>
+			<distribution>repo</distribution>
+			<comments>Strong copyleft license, commonly known as the GNU GPL v3</comments>
+		</license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<id>anandbeh</id>
+			<name>Anand Beh</name>
+			<url>https://www.arim.space</url>
+			<roles>
+				<role>creator</role>
+				<role>developer</role>
+			</roles>
+			<timezone>America/New_York</timezone>
+		</developer>
+	</developers>
+	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.name}_v${project.version}</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>${project.build.directory}/shared-resources</directory>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -18,6 +61,35 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<outputDirectory>${project.build.directory}/shared-resources</outputDirectory>
+					<excludeTransitive>true</excludeTransitive>
+					<artifactItems>
+						<artifactItem>
+							<groupId>space.arim</groupId>
+							<artifactId>universal-gpl</artifactId>
+							<version>${universal.version}</version>
+							<classifier>resources</classifier>
+						</artifactItem>
+					</artifactItems>
+				</configuration>
+				<executions>
+					<execution>
+						<id>unpack-shared-resources</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<includes>LICENSE.txt</includes>
+							<classifier>resources</classifier>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -41,7 +113,33 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+		</repository>
+		<snapshotRepository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<dependencies>
+		<dependency>
+			<groupId>space.arim</groupId>
+			<artifactId>universal-registry</artifactId>
+			<version>${universal.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>space.arim</groupId>
+			<artifactId>universal-gpl</artifactId>
+			<version>${universal.version}</version>
+			<classifier>resources</classifier>
+			<type>zip</type>
+			<optional>true</optional>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.annotation</artifactId>
@@ -57,11 +155,6 @@
 			<artifactId>spigot-api</artifactId>
 			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.MilkBowl</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>1.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.SkriptLang</groupId>
@@ -88,10 +181,15 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
+	
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>

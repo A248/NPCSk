@@ -22,14 +22,17 @@ import java.io.IOException;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import space.arim.universal.registry.UniversalRegistry;
+
 import space.arim.npcsk.npcs.NPCExecutor;
+import space.arim.npcsk.npcs.NPCSkExecutor;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 
 public class NPCSk extends JavaPlugin {
 	
-	private static NPCExecutor npcs;
+	private static NPCSkExecutor npcs;
 	
 	private void shutter(String reason) {
 		getLogger().severe("**SEVERE**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
@@ -58,7 +61,7 @@ public class NPCSk extends JavaPlugin {
 		}
 		SkriptAddon addon = Skript.registerAddon(this);
 		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
-		npcs = new NPCExecutor(this);
+		UniversalRegistry.get().register(NPCExecutor.class, new NPCSkExecutor(this));
 	}
 	
 	@Override
@@ -78,6 +81,6 @@ public class NPCSk extends JavaPlugin {
 	}
 	
 	public static NPCExecutor npcs() {
-		return npcs;
+		return UniversalRegistry.get().getRegistration(NPCExecutor.class);
 	}
 }

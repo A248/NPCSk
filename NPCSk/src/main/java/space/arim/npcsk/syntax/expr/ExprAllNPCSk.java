@@ -18,12 +18,13 @@
  */
 package space.arim.npcsk.syntax.expr;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+import org.bukkit.event.Event;
+
+import space.arim.npcsk.NPCSk;
+
 import ch.njol.skript.Skript;
-import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -33,61 +34,41 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
-import space.arim.npcsk.NPCSk;
 
-@Name("NPCSk Visibility")
-@Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
-@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
-@Since("0.7.0")
-public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
-	
-	private Expression<String> id;
-	private Expression<Player> target;
-	
+@Name("NPCSk All NPCs")
+@Description("Gets a list of all NPCs.")
+@Examples({"on command \"/showmeall\":", "\tloop all npcs:", "\t\tset visibility of loop-value for player to true", "\tsend \"You can now see all NPCs!\""})
+@Since("0.8.0")
+public class ExprAllNPCSk extends SimpleExpression<String> {
+
 	static {
-		Skript.registerExpression(ExprVisibilityNPCSk.class, Boolean.class, ExpressionType.COMBINED, "[npcsk] npc visibility of %string% for %player%");
+		Skript.registerExpression(ExprAllNPCSk.class, String.class, ExpressionType.SIMPLE, "[npcsk] [all] (npcs|npc ids)");
 	}
 	
 	@Override
-	public Class<? extends Boolean> getReturnType() {
-		return Boolean.class;
+	public Class<? extends String> getReturnType() {
+		return String.class;
 	}
-	
+
 	@Override
 	public boolean isSingle() {
-		return true;
+		return false;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public boolean init(Expression<?>[] exprs, int arg1, Kleenean arg2, ParseResult arg3) {
-		id = (Expression<String>) exprs[0];
-		target = (Expression<Player>) exprs[1];
 		return true;
 	}
-	
+
 	@Override
 	public String toString(@Nullable Event evt, boolean debug) {
-		return "npcsk npc visibility of " + id.toString(evt, debug) + " for " + target.toString(evt, debug);
+		return "npcsk all npc ids";
 	}
-	
+
 	@Override
 	@Nullable
-	protected Boolean[] get(Event evt) {
-		return new Boolean[] {NPCSk.npcs().isShown(id.getSingle(evt), target.getSingle(evt))};
-	}
-	
-	@Override
-	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {Boolean.class};
-		}
-		return null;
-	}
-	
-	@Override
-	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
+	protected String[] get(Event evt) {
+		return NPCSk.npcs().getAll().toArray(new String[] {});
 	}
 	
 }

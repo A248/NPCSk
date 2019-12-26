@@ -34,6 +34,7 @@ import net.jitse.npclib.NPCLib;
 import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
 import net.jitse.npclib.api.state.NPCSlot;
+import net.jitse.npclib.api.state.NPCState;
 
 public class NPCSkExecutor implements NPCExecutor {
 	
@@ -129,8 +130,43 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	private NPCSlot slotFromString(String slotname) {
 		for (NPCSlot slot : NPCSlot.values()) {
-			if (slotname.equalsIgnoreCase(slot.name())) {
+			if (slot.name().equalsIgnoreCase(slotname)) {
 				return slot;
+			}
+		}
+		return null;
+	}
+	
+	private boolean setForState(String id, NPCState state, boolean value) {
+		if (state != null && npcs.containsKey(id)) {
+			if (!npcs.get(id).getState(state) && value) {
+				npcs.get(id).toggleState(state);
+			} else if (npcs.get(id).getState(state) && !value) {
+				npcs.get(id).toggleState(state);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean getForState(String id, NPCState state) {
+		return state != null && npcs.containsKey(id) && npcs.get(id).getState(state);
+	}
+	
+	@Override
+	public boolean setNPCState(String id, String state, boolean value) {
+		return setForState(id, stateFromString(state), value);
+	}
+	
+	@Override
+	public boolean getNPCState(String id, String state) {
+		return getForState(id, stateFromString(state));
+	}
+	
+	private NPCState stateFromString(String statename) {
+		for (NPCState state : NPCState.values()) {
+			if (state.name().equalsIgnoreCase(statename)) {
+				return state;
 			}
 		}
 		return null;

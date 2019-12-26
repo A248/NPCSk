@@ -43,6 +43,10 @@ public interface NPCExecutor extends Registrable, AutoCloseable {
 	
 	ItemStack getNPCSlot(String id, String slot);
 	
+	boolean setNPCState(String id, String state, boolean value);
+	
+	boolean getNPCState(String id, String state);
+	
 	Set<String> getAll();
 	
 	boolean hasNpc(String id);

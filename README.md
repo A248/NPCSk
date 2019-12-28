@@ -5,7 +5,7 @@ Solid Skript NPC handling using NPCLib and Skript.
 
 **What is NPCLib?**
 
-NPCLib is a library created by Jitse for simple Minecraft NPC handling.
+NPCLib is a library created by JitseB for simple Minecraft NPC handling.
 You can view it [here](https://github.com/JitseB/NPCLib)
 
 **What is Skript?**

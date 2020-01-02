@@ -17,6 +17,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<universal.version>0.6.3-SNAPSHOT</universal.version>
+		<npclib.version>2.3.1-SNAPSHOT</npclib.version>
 	</properties>
 	
 	<licenses>
@@ -104,7 +105,7 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>net.jitse:npclib-api</include>
+									<include>net.jitse:*</include>
 								</includes>
 							</artifactSet>
 						</configuration>
@@ -148,7 +149,12 @@
 		<dependency>
 			<groupId>net.jitse</groupId>
 			<artifactId>npclib-api</artifactId>
-			<version>2.3.1-SNAPSHOT</version>
+			<version>${npclib.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.jitse</groupId>
+			<artifactId>npclib-nms-v1_8_R3</artifactId>
+			<version>${npclib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>

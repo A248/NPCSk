@@ -3,4 +3,4 @@ main: ${project.groupId}.npcsk.NPCSk
 version: ${project.version}
 author: A248
 description: ${project.description}
-depend: [Skript]
+depend: [UniversalRegistryPlugin, Skript]

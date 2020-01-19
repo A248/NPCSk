@@ -26,8 +26,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import space.arim.universal.registry.Registrable;
+import space.arim.universal.util.lang.AutoClosable;
 
-public interface NPCExecutor extends Registrable, AutoCloseable {
+public interface NPCExecutor extends Registrable, AutoClosable {
 
 	String getLatestId();
 	
@@ -60,8 +61,5 @@ public interface NPCExecutor extends Registrable, AutoCloseable {
 	boolean delNpc(String id);
 	
 	void delAll();
-	
-	@Override
-	void close();
 	
 }

@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import space.arim.universal.registry.Registrable;
-import space.arim.universal.util.lang.AutoClosable;
+import space.arim.universal.util.AutoClosable;
 
 public interface NPCExecutor extends Registrable, AutoClosable {
 

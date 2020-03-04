@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<universal.version>0.6.8-SNAPSHOT</universal.version>
+		<universal.version>0.6.9-SNAPSHOT</universal.version>
 		<npclib.version>2.3.1-SNAPSHOT</npclib.version>
 	</properties>
 	
@@ -69,14 +69,6 @@
 				<configuration>
 					<outputDirectory>${project.build.directory}/shared-resources</outputDirectory>
 					<excludeTransitive>true</excludeTransitive>
-					<artifactItems>
-						<artifactItem>
-							<groupId>space.arim</groupId>
-							<artifactId>universal-gpl</artifactId>
-							<version>${universal.version}</version>
-							<classifier>resources</classifier>
-						</artifactItem>
-					</artifactItems>
 				</configuration>
 				<executions>
 					<execution>
@@ -87,7 +79,10 @@
 						<phase>generate-resources</phase>
 						<configuration>
 							<includes>LICENSE.txt</includes>
-							<classifier>resources</classifier>
+							<includeGroupIds>space.arim</includeGroupIds>
+							<includeArtifactIds>universal-gpl</includeArtifactIds>
+							<includeScope>provided</includeScope>
+							<includeTypes>zip</includeTypes>
 						</configuration>
 					</execution>
 				</executions>
@@ -136,7 +131,6 @@
 			<groupId>space.arim</groupId>
 			<artifactId>universal-gpl</artifactId>
 			<version>${universal.version}</version>
-			<classifier>resources</classifier>
 			<type>zip</type>
 			<optional>true</optional>
 			<scope>provided</scope>
@@ -148,12 +142,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.jitse</groupId>
-			<artifactId>npclib-api</artifactId>
-			<version>${npclib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.jitse</groupId>
-			<artifactId>npclib-nms-v1_8_R3</artifactId>
+			<artifactId>npclib-plugin</artifactId>
 			<version>${npclib.version}</version>
 		</dependency>
 		<dependency>
@@ -190,12 +179,12 @@
 	
 	<repositories>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
 			<id>arim-repo</id>
 			<url>https://dl.cloudsmith.io/public/anand-beh/arim-repo/maven/</url>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>

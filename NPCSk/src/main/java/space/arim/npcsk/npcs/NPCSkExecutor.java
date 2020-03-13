@@ -38,14 +38,12 @@ import net.jitse.npclib.api.state.NPCState;
 
 public class NPCSkExecutor implements NPCExecutor {
 	
-	private final JavaPlugin plugin;
 	private final NPCLib lib;
 	private final double defaultAutoHide;
 	private final HashMap<String, NPC> npcs = new HashMap<String, NPC>();
 	private String latest;
 	
 	public NPCSkExecutor(JavaPlugin plugin) {
-		this.plugin = plugin;
 		lib = new NPCLib(plugin);
 		defaultAutoHide = lib.getAutoHideDistance();
 	}
@@ -65,10 +63,8 @@ public class NPCSkExecutor implements NPCExecutor {
 	@Override
 	public String createNpc(List<String> name, int mineskinId, Location loc) {
 		NPC npc = lib.createNPC(encodeAll(name));
+		MineSkinFetcher.fetchSkinFromIdAsync(mineskinId, npc::setSkin);
 		npc.setLocation(loc);
-		MineSkinFetcher.fetchSkinFromIdAsync(mineskinId, skin -> {
-			npc.setSkin(skin);
-		});
 		npc.create();
 		latest = npc.getId();
 		npcs.put(latest, npc);
@@ -209,9 +205,7 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public void delAll() {
-		for (HashMap.Entry<String, NPC> val : npcs.entrySet()) {
-			val.getValue().destroy();
-		}
+		npcs.values().forEach(NPC::destroy);
 		npcs.clear();
 	}
 	
@@ -219,17 +213,17 @@ public class NPCSkExecutor implements NPCExecutor {
 	public void close() {
 		delAll();
 	}
-
+	
 	@Override
 	public String getName() {
-		return plugin.getDescription().getName();
+		return lib.getPlugin().getDescription().getName();
 	}
-
+	
 	@Override
 	public String getVersion() {
-		return plugin.getDescription().getVersion();
+		return lib.getPlugin().getDescription().getVersion();
 	}
-
+	
 	@Override
 	public byte getPriority() {
 		return RegistryPriority.LOWER;

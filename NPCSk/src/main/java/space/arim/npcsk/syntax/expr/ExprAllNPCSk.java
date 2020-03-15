@@ -38,7 +38,7 @@ import ch.njol.util.Kleenean;
 
 @Name("NPCSk All NPCs")
 @Description("Gets a list of all NPCs.")
-@Examples({"on command \"/showmeall\":", "\tloop all npcs:", "\t\tset visibility of loop-value for player to true", "\tsend \"You can now see all NPCs!\""})
+@Examples({"Command /showall:", "\ttrigger:", "\t\tloop all npcs:", "\t\t\tset visibility of loop-value for player to true", "\\ttsend \"You can now see all NPCs!\""})
 @Since("0.8.0")
 public class ExprAllNPCSk extends SimpleExpression<String> {
 	

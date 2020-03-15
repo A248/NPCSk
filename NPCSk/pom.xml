@@ -17,7 +17,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<universal.version>0.6.9-SNAPSHOT</universal.version>
-		<npclib.version>2.3.1-SNAPSHOT</npclib.version>
+		<npclib.version>2.4.1-SNAPSHOT</npclib.version>
 	</properties>
 	
 	<licenses>
@@ -100,7 +100,7 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>net.jitse:*</include>
+									<include>net.jitse:npclib-plugin</include>
 								</includes>
 							</artifactSet>
 						</configuration>
@@ -158,20 +158,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>de.slikey</groupId>
-					<artifactId>EffectLib</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.sacredlabyrinth.Phaed</groupId>
-					<artifactId>PreciousStones</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sk89q</groupId>
-					<artifactId>worldguard</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.milkbowl.vault</groupId>
-					<artifactId>Vault</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

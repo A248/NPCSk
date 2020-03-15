@@ -83,15 +83,13 @@ public class ExprNPCSlotNPCSk extends SimpleExpression<ItemStack> {
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {ItemStack.class};
-		}
-		return null;
+		return (mode == ChangeMode.SET || mode == ChangeMode.RESET) ? new Class<?>[] {ItemStack.class} : null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setNPCSlot(id.getSingle(evt), mode == ChangeMode.SET ? (ItemStack) delta[0] : new ItemStack(Material.AIR), slot.getSingle(evt));
+		ItemStack item = (mode == ChangeMode.SET) ? (ItemStack) delta[0] : (mode == ChangeMode.RESET) ? new ItemStack(Material.AIR) : null;
+		NPCSk.npcs().setNPCSlot(id.getSingle(evt), item, slot.getSingle(evt));
 	}
 
 }

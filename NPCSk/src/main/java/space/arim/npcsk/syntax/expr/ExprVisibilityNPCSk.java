@@ -37,7 +37,7 @@ import space.arim.npcsk.NPCSk;
 
 @Name("NPCSk Visibility")
 @Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
-@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
+@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to false"})
 @Since("0.7.0")
 public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	
@@ -79,15 +79,14 @@ public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {Boolean.class};
-		}
-		return null;
+		return (mode == ChangeMode.SET || mode == ChangeMode.RESET) ? new Class<?>[] {Boolean.class} : null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), (mode == ChangeMode.SET) && (Boolean) delta[0]);
+		}
 	}
 	
 }

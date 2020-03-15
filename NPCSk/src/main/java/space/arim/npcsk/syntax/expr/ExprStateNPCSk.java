@@ -80,23 +80,13 @@ public class ExprStateNPCSk extends SimpleExpression<Boolean> {
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {Boolean.class};
-		}
-		return null;
+		return (mode == ChangeMode.SET || mode == ChangeMode.RESET) ? new Class<?>[] {Boolean.class} : null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		switch (mode) {
-		case SET:
-			NPCSk.npcs().setNPCState(id.getSingle(evt), state.getSingle(evt), (Boolean) delta[0]);
-			break;
-		case RESET:
-			NPCSk.npcs().setNPCState(id.getSingle(evt), state.getSingle(evt), false);
-			break;
-		default:
-			break;
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			NPCSk.npcs().setNPCState(id.getSingle(evt), state.getSingle(evt), (mode == ChangeMode.SET) && (Boolean) delta[0]);
 		}
 	}
 

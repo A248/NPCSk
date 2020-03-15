@@ -50,7 +50,7 @@ public class ExprAutoHideNPCSk extends SimpleExpression<Number> {
 	public Class<? extends Number> getReturnType() {
 		return Number.class;
 	}
-
+	
 	@Override
 	public boolean isSingle() {
 		return true;
@@ -74,19 +74,16 @@ public class ExprAutoHideNPCSk extends SimpleExpression<Number> {
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {Number.class};
-		}
-		return null;
+		return (mode == ChangeMode.SET || mode == ChangeMode.RESET) ? new Class<?>[] {Number.class} : null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
 		if (mode == ChangeMode.SET) {
 			NPCSk.npcs().setAutoHide((Double) delta[0]);
-			return;
+		} else if (mode == ChangeMode.RESET) { 
+			NPCSk.npcs().clearAutoHide();
 		}
-		NPCSk.npcs().clearAutoHide();
 	}
 
 }

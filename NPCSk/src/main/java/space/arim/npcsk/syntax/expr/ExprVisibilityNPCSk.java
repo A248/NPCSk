@@ -79,15 +79,14 @@ public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	
 	@Override
 	public Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
-			return new Class<?>[] {Boolean.class};
-		}
-		return null;
+		return (mode == ChangeMode.SET || mode == ChangeMode.RESET) ? new Class<?>[] {Boolean.class} : null;
 	}
 	
 	@Override
 	public void change(Event evt, Object[] delta, ChangeMode mode) {
-		NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), mode == ChangeMode.SET && (Boolean) delta[0]);
+		if (mode == ChangeMode.SET || mode == ChangeMode.RESET) {
+			NPCSk.npcs().setShown(id.getSingle(evt), target.getSingle(evt), (mode == ChangeMode.SET) && (Boolean) delta[0]);
+		}
 	}
 	
 }

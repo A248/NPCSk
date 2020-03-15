@@ -32,52 +32,38 @@ import ch.njol.skript.SkriptAddon;
 
 public class NPCSk extends JavaPlugin {
 	
-	private static NPCSkExecutor npcs;
-	
-	private void shutter(String reason) {
-		getLogger().severe("**SEVERE**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
-		getServer().getPluginManager().disablePlugin(this);
-	}
-	
-	private void error(String reason) {
-		shutter(reason);
-		throw new IllegalStateException(reason);
-	}
-	
 	private void error(String reason, Exception cause) {
-		shutter(reason);
-		throw new IllegalStateException(reason, cause);
+		getLogger().severe("**ERROR**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
+		getServer().getPluginManager().disablePlugin(this);
+		if (cause != null) {
+			cause.printStackTrace();
+		}
 	}
 	
-	private void tryLoad() throws IOException {
-		try {
-			Class.forName("ch.njol.skript.Skript");
-			Class.forName("net.jitse.npclib.NPCLib");
-		} catch (ClassNotFoundException ex) {
-			error("Skript and/or NPCLib dependencies not found!", ex);
-		}
+	private boolean tryLoad() throws IOException, ClassNotFoundException {
+		Class.forName("ch.njol.skript.Skript");
+		Class.forName("net.jitse.npclib.NPCLib");
 		if (!Skript.isAcceptRegistrations()) {
-			error("Skript is not accepting syntax registrations");
+			error("Skript is not accepting syntax registrations", null);
+			return false;
 		}
 		SkriptAddon addon = Skript.registerAddon(this);
 		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
 		UniversalRegistry.get().register(NPCExecutor.class, new NPCSkExecutor(this));
+		return true;
 	}
 	
 	@Override
 	public void onEnable() {
 		try {
-			tryLoad();
-		} catch (IllegalStateException | IOException ex) {
-			ex.printStackTrace();
-			return;
+			if (tryLoad()) {
+				getLogger().info("Everything ready. Starting...");
+			}
+		} catch (IOException ex) {
+			error("Could not load syntax classes", ex);
+		} catch (ClassNotFoundException ex) {
+			error("Skript and/or NPCLib dependencies not found", ex);
 		}
-		getLogger().info("Everything ready. Starting...");
-	}
-	
-	@Override
-	public void onDisable() {
-		npcs.close();
 	}
 	
 	public static NPCExecutor npcs() {

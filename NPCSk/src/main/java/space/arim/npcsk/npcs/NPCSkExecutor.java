@@ -211,7 +211,7 @@ public class NPCSkExecutor implements NPCExecutor {
 	}
 	
 	@Override
-	public void delAll() {
+	public void deleteAll() {
 		while (!npcs.isEmpty()) {
 			Set<String> ids = new HashSet<String>(npcs.keySet());
 			ids.forEach(this::delNpc);
@@ -220,7 +220,7 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public void close() {
-		delAll();
+		deleteAll();
 	}
 	
 	@Override

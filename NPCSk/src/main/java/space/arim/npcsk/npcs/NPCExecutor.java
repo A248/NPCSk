@@ -231,6 +231,6 @@ public interface NPCExecutor extends Registrable, AutoClosable {
 	 * Deletes all NPCs.
 	 * 
 	 */
-	void delAll();
+	void deleteAll();
 	
 }

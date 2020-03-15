@@ -18,9 +18,11 @@
  */
 package space.arim.npcsk.npcs;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -40,14 +42,15 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	private final NPCLib lib;
 	private final double defaultAutoHide;
-	private final HashMap<String, NPC> npcs = new HashMap<String, NPC>();
-	private String latest;
+	private final ConcurrentHashMap<String, NPC> npcs = new ConcurrentHashMap<String, NPC>();
+	private volatile Set<String> idsView;
+	private volatile String latest;
 	
 	public NPCSkExecutor(JavaPlugin plugin) {
 		lib = new NPCLib(plugin);
 		defaultAutoHide = lib.getAutoHideDistance();
 	}
-
+	
 	private List<String> encodeAll(List<String> input) {
 		for (int n = 0; n < input.size(); n++) {
 			input.set(n, ChatColor.translateAlternateColorCodes('&', input.get(n)));
@@ -73,45 +76,51 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public Location getLocation(String id) {
-		return npcs.containsKey(id) ? npcs.get(id).getLocation() : null;
+		NPC npc = npcs.get(id);
+		return (npc != null) ? npc.getLocation() : null;
 	}
 	
 	@Override
 	public boolean isShown(String id, Player target) {
-		return npcs.containsKey(id) && npcs.get(id).isShown(target);
+		NPC npc = npcs.get(id);
+		return (npc != null) && npc.isShown(target);
 	}
 	
 	@Override
 	public boolean setShown(String id, Player target, boolean show) {
-		return show ? show(id, target) : hide(id, target);
+		return (show) ? show(id, target) : hide(id, target);
 	}
 	
 	private boolean show(String id, Player target) {
-		if (npcs.containsKey(id) && !npcs.get(id).isShown(target)) {
-			npcs.get(id).show(target);
+		NPC npc = npcs.get(id);
+		if (npc != null && !npc.isShown(target)) {
+			npc.show(target);
 			return true;
 		}
 		return false;
 	}
 	
 	private boolean hide(String id, Player target) {
-		if (npcs.containsKey(id) && npcs.get(id).isShown(target)) {
-			npcs.get(id).hide(target);
+		NPC npc = npcs.get(id);
+		if (npc != null && npc.isShown(target)) {
+			npc.hide(target);
 			return true;
 		}
 		return false;
 	}
 	
 	private boolean setForSlot(String id, ItemStack item, NPCSlot slot) {
-		if (slot != null && npcs.containsKey(id)) {
-			npcs.get(id).setItem(slot, item);
+		NPC npc = npcs.get(id);
+		if (npc != null && slot != null) {
+			npc.setItem(slot, item);
 			return true;
 		}
 		return false;
 	}
 	
 	private ItemStack getForSlot(String id, NPCSlot slot) {
-		return slot == null ? null : npcs.containsKey(id) ? npcs.get(id).getItem(slot) : null;
+		NPC npc = npcs.get(id);
+		return (npc != null && slot != null) ? npc.getItem(slot) : null;
 	}
 	
 	@Override
@@ -134,19 +143,17 @@ public class NPCSkExecutor implements NPCExecutor {
 	}
 	
 	private boolean setForState(String id, NPCState state, boolean value) {
-		if (state != null && npcs.containsKey(id)) {
-			if (!npcs.get(id).getState(state) && value) {
-				npcs.get(id).toggleState(state);
-			} else if (npcs.get(id).getState(state) && !value) {
-				npcs.get(id).toggleState(state);
-			}
+		NPC npc = npcs.get(id);
+		if (npc != null && state != null && (!npc.getState(state) && value || npc.getState(state) && !value)) {
+			npc.toggleState(state);
 			return true;
 		}
 		return false;
 	}
 	
 	private boolean getForState(String id, NPCState state) {
-		return state != null && npcs.containsKey(id) && npcs.get(id).getState(state);
+		NPC npc = npcs.get(id);
+		return (npc != null && state != null) && npc.getState(state);
 	}
 	
 	@Override
@@ -170,7 +177,7 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public Set<String> getAll() {
-		return npcs.keySet();
+		return (idsView != null) ? idsView : (idsView = Collections.unmodifiableSet(npcs.keySet()));
 	}
 	
 	@Override
@@ -195,9 +202,9 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public boolean delNpc(String id) {
-		if (npcs.containsKey(id)) {
-			npcs.get(id).destroy();
-			npcs.remove(id);
+		NPC npc = npcs.get(id);
+		if (npc != null && npcs.remove(npc.getId()) == npc) {
+			npc.destroy();
 			return true;
 		}
 		return false;
@@ -205,8 +212,10 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public void delAll() {
-		npcs.values().forEach(NPC::destroy);
-		npcs.clear();
+		while (!npcs.isEmpty()) {
+			Set<String> ids = new HashSet<String>(npcs.keySet());
+			ids.forEach(this::delNpc);
+		}
 	}
 	
 	@Override

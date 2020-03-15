@@ -25,6 +25,7 @@ import org.bukkit.event.Event;
 import space.arim.npcsk.NPCSk;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -40,7 +41,7 @@ import ch.njol.util.Kleenean;
 @Examples({"on command \"/showmeall\":", "\tloop all npcs:", "\t\tset visibility of loop-value for player to true", "\tsend \"You can now see all NPCs!\""})
 @Since("0.8.0")
 public class ExprAllNPCSk extends SimpleExpression<String> {
-
+	
 	static {
 		Skript.registerExpression(ExprAllNPCSk.class, String.class, ExpressionType.SIMPLE, "[npcsk] [all] (npcs|npc ids)");
 	}
@@ -64,11 +65,23 @@ public class ExprAllNPCSk extends SimpleExpression<String> {
 	public String toString(@Nullable Event evt, boolean debug) {
 		return "npcsk all npc ids";
 	}
-
+	
 	@Override
 	@Nullable
 	protected String[] get(Event evt) {
 		return NPCSk.npcs().getAll().toArray(new String[] {});
+	}
+	
+	@Override
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		return (mode == ChangeMode.RESET) ? new Class<?>[] {Number.class} : null;
+	}
+	
+	@Override
+	public void change(Event evt, Object[] delta, ChangeMode mode) {
+		if (mode == ChangeMode.RESET) {
+			NPCSk.npcs().deleteAll();
+		}
 	}
 	
 }

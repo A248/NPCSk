@@ -49,7 +49,9 @@ public interface NPCExecutor extends Registrable, AutoClosable {
 	 * Creates an NPC with name, skin ID, and location. <br>
 	 * <br>
 	 * The skin is fetched asynchronously and may therefore load
-	 * after the NPC is spawned, causing a slight delay in client rendering.
+	 * after the NPC is spawned, causing a slight delay in client rendering. <br>
+	 * <br>
+	 * Implementations must parse colours and styling according to '{@literal &}' formatting codes.
 	 * 
 	 * @param name a list of text which will become the NPC's display name
 	 * @param mineskinId the mineskin skin id

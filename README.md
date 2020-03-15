@@ -18,7 +18,7 @@ NPCSk is a Skript addon providing functionality with NPCLib. Skript developers a
 
 **How do I use NPCSk?**
 * Drag and drop the [latest release](https://github.com/A248/NPCSk/releases) to your /plugins/ folder of your Spigot server.
-* See the [documentation](https://www.google.com/search?q=coming+soon) for events, conditions, effects, and expressions.
+* See the [documentation](https://github.com/A248/NPCSk/blob/master/DOCUMENTATION.md) for events, conditions, effects, and expressions.
 
 ### License ###
 

@@ -37,7 +37,7 @@ import space.arim.npcsk.NPCSk;
 
 @Name("NPCSk Visibility")
 @Description("Whether a NPC is visible for a player. NPCs may be hidden or shown for specific players")
-@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to true"})
+@Examples({"on npc interact:", "\tset npc visibility of npc-event-npc for npc-event-player to false"})
 @Since("0.7.0")
 public class ExprVisibilityNPCSk extends SimpleExpression<Boolean> {
 	

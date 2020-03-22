@@ -18,6 +18,7 @@
  */
 package space.arim.npcsk.syntax.evt;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -29,6 +30,8 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.registrations.EventValues;
+import ch.njol.skript.util.Getter;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 
 @Name("NPCSk Interact Event")
@@ -39,6 +42,13 @@ public class EvtInteractNPCSk extends SkriptEvent {
 	
 	static {
 		Skript.registerEvent("NPC Interact", EvtInteractNPCSk.class, NPCInteractEvent.class, "[npcsk] npc interact [event]");
+		EventValues.registerEventValue(NPCInteractEvent.class, Player.class, new Getter<Player, NPCInteractEvent>() {
+			@Override
+			@Nullable
+			public Player get(NPCInteractEvent arg) {
+				return arg.getWhoClicked();
+			}
+		}, 0);
 	}
 	
 	@Override

@@ -55,7 +55,7 @@ public class ExprEventNPCNPCSk extends SimpleExpression<String> {
 	@Override
 	public boolean init(Expression<?>[] arg0, int arg1, Kleenean arg2, ParseResult arg3) {
 		if (!ScriptLoader.isCurrentEvent(NPCInteractEvent.class)) {
-			Skript.error("The arimsk expression 'npc-event-npc' may only be used in npc events");
+			Skript.error("The npcsk expression 'npc-event-npc' may only be used in npc events");
 			return false;
 		}
 		return true;

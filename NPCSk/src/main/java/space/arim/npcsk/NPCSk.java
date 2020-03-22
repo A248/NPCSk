@@ -22,8 +22,6 @@ import java.io.IOException;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import space.arim.universal.registry.UniversalRegistry;
-
 import space.arim.npcsk.npcs.NPCExecutor;
 import space.arim.npcsk.npcs.NPCSkExecutor;
 
@@ -31,6 +29,8 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 
 public class NPCSk extends JavaPlugin {
+	
+	private static NPCExecutor npcs;
 	
 	private void error(String reason, Exception cause) {
 		getLogger().severe("**ERROR**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
@@ -42,14 +42,13 @@ public class NPCSk extends JavaPlugin {
 	
 	private boolean tryLoad() throws IOException, ClassNotFoundException {
 		Class.forName("ch.njol.skript.Skript");
-		Class.forName("net.jitse.npclib.NPCLib");
 		if (!Skript.isAcceptRegistrations()) {
 			error("Skript is not accepting syntax registrations", null);
 			return false;
 		}
 		SkriptAddon addon = Skript.registerAddon(this);
 		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
-		UniversalRegistry.get().register(NPCExecutor.class, new NPCSkExecutor(this));
+		npcs = new NPCSkExecutor(this);
 		return true;
 	}
 	
@@ -62,11 +61,11 @@ public class NPCSk extends JavaPlugin {
 		} catch (IOException ex) {
 			error("Could not load syntax classes", ex);
 		} catch (ClassNotFoundException ex) {
-			error("Skript and/or NPCLib dependencies not found", ex);
+			error("Skript not found", ex);
 		}
 	}
 	
 	public static NPCExecutor npcs() {
-		return UniversalRegistry.get().getRegistration(NPCExecutor.class);
+		return npcs;
 	}
 }

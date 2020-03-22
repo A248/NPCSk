@@ -30,8 +30,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import space.arim.universal.registry.RegistryPriority;
-
 import net.jitse.npclib.NPCLib;
 import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
@@ -221,21 +219,6 @@ public class NPCSkExecutor implements NPCExecutor {
 	@Override
 	public void close() {
 		deleteAll();
-	}
-	
-	@Override
-	public String getName() {
-		return lib.getPlugin().getDescription().getName();
-	}
-	
-	@Override
-	public String getVersion() {
-		return lib.getPlugin().getDescription().getVersion();
-	}
-	
-	@Override
-	public byte getPriority() {
-		return RegistryPriority.LOWER;
 	}
 	
 }

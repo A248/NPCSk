@@ -25,9 +25,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import space.arim.universal.registry.Registrable;
-import space.arim.universal.util.AutoClosable;
-
 /**
  * An API layer for managing NPCs, without having to access NPCLib directly. <br>
  * <br>
@@ -36,7 +33,7 @@ import space.arim.universal.util.AutoClosable;
  * @author A248
  *
  */
-public interface NPCExecutor extends Registrable, AutoClosable {
+public interface NPCExecutor {
 
 	/**
 	 * The ID of the last NPC created using {@link #createNpc(List, int, Location)}
@@ -234,5 +231,11 @@ public interface NPCExecutor extends Registrable, AutoClosable {
 	 * 
 	 */
 	void deleteAll();
+	
+	/**
+	 * Same as {@link #deleteAll()}
+	 * 
+	 */
+	void close();
 	
 }

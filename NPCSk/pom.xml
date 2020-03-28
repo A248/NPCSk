@@ -18,6 +18,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<universal.version>0.7.0-SNAPSHOT</universal.version>
 		<npclib.version>2.4.1-SNAPSHOT</npclib.version>
+		<spigot.version>1.8.8-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 	
 	<licenses>
@@ -143,7 +144,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<version>${spigot.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

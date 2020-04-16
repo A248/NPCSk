@@ -69,7 +69,8 @@ public class ExprLocationNPCSk extends SimpleExpression<Location> {
 	@Override
 	@Nullable
 	protected Location[] get(Event evt) {
-		return NPCSk.npcs().hasNpc(id.getSingle(evt)) ? new Location[] {NPCSk.npcs().getLocation(id.getSingle(evt))} : null;
+		Location location = NPCSk.npcs().getLocation(id.getSingle(evt));
+		return (location != null) ? new Location[] {location} : null;
 	}
 	
 }

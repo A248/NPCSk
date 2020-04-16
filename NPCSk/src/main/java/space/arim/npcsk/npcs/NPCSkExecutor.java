@@ -200,8 +200,8 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	@Override
 	public boolean delNpc(String id) {
-		NPC npc = npcs.get(id);
-		if (npc != null && npcs.remove(npc.getId()) == npc) {
+		NPC npc = npcs.remove(id);
+		if (npc != null) {
 			npc.destroy();
 			return true;
 		}

@@ -1,6 +1,6 @@
 /* 
  * NPCSk, a robust Skript NPC addon
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * Copyright © 2023 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
+
 package space.arim.npcsk.npcs;
 
 import java.util.Collections;
@@ -30,8 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import space.arim.universal.registry.RegistryPriority;
-
 import net.jitse.npclib.NPCLib;
 import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
@@ -42,7 +41,7 @@ public class NPCSkExecutor implements NPCExecutor {
 	
 	private final NPCLib lib;
 	private final double defaultAutoHide;
-	private final ConcurrentHashMap<String, NPC> npcs = new ConcurrentHashMap<String, NPC>();
+	private final ConcurrentHashMap<String, NPC> npcs = new ConcurrentHashMap<>();
 	private volatile Set<String> idsView;
 	private volatile String latest;
 	
@@ -217,25 +216,10 @@ public class NPCSkExecutor implements NPCExecutor {
 			ids.forEach(this::delNpc);
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		deleteAll();
 	}
-	
-	@Override
-	public String getName() {
-		return lib.getPlugin().getDescription().getName();
-	}
-	
-	@Override
-	public String getVersion() {
-		return lib.getPlugin().getDescription().getVersion();
-	}
-	
-	@Override
-	public byte getPriority() {
-		return RegistryPriority.LOWER;
-	}
-	
+
 }

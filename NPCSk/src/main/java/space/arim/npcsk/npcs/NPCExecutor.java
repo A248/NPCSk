@@ -1,6 +1,6 @@
 /* 
  * NPCSk, a robust Skript NPC addon
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * Copyright © 2023 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
+
 package space.arim.npcsk.npcs;
 
 import java.util.List;
@@ -25,9 +26,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import space.arim.universal.registry.Registrable;
-import space.arim.universal.util.AutoClosable;
-
 /**
  * An API layer for managing NPCs, without having to access NPCLib directly. <br>
  * <br>
@@ -36,7 +34,7 @@ import space.arim.universal.util.AutoClosable;
  * @author A248
  *
  */
-public interface NPCExecutor extends Registrable, AutoClosable {
+public interface NPCExecutor extends AutoCloseable {
 
 	/**
 	 * The ID of the last NPC created using {@link #createNpc(List, int, Location)}

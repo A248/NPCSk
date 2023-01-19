@@ -1,6 +1,6 @@
 /* 
  * NPCSk, a robust Skript NPC addon
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * Copyright © 2023 Anand Beh <https://www.arim.space>
  * 
  * NPCSk is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,12 @@
  * along with NPCSk. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
+
 package space.arim.npcsk;
 
 import java.io.IOException;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
-import space.arim.universal.registry.UniversalRegistry;
 
 import space.arim.npcsk.npcs.NPCExecutor;
 import space.arim.npcsk.npcs.NPCSkExecutor;
@@ -31,7 +30,9 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 
 public class NPCSk extends JavaPlugin {
-	
+
+	private static NPCSkExecutor executor;
+
 	private void error(String reason, Exception cause) {
 		getLogger().severe("**ERROR**: Unable to load NPCSk's features! Reason: " + reason + ". Shutting down...");
 		getServer().getPluginManager().disablePlugin(this);
@@ -49,7 +50,7 @@ public class NPCSk extends JavaPlugin {
 		}
 		SkriptAddon addon = Skript.registerAddon(this);
 		addon.loadClasses("space.arim.npcsk.syntax", "cond", "eff", "evt", "expr");
-		UniversalRegistry.get().register(NPCExecutor.class, new NPCSkExecutor(this));
+		executor = new NPCSkExecutor(this);
 		return true;
 	}
 	
@@ -67,6 +68,7 @@ public class NPCSk extends JavaPlugin {
 	}
 	
 	public static NPCExecutor npcs() {
-		return UniversalRegistry.get().getRegistration(NPCExecutor.class);
+		return executor;
 	}
+
 }

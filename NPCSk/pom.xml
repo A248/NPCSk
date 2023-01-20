@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim</groupId>
 	<artifactId>npcsk</artifactId>
-	<version>0.10.0</version>
+	<version>0.10.1</version>
 	
 	<name>NPCSK</name>
 	<description>A Skript addon to provide support for Jitse's NPCLib</description>

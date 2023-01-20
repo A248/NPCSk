@@ -1,0 +1,3 @@
+[submodule "NPCLib"]
+	path = NPCLib
+	url = git@github.com:A248/NPCLib.git
